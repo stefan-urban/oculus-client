@@ -3,6 +3,8 @@
 #include <string>
 #include <boost/asio.hpp>
 
+#include "TcpClient.hpp"
+
 
 int main(int argc, char* argv[])
 {
@@ -22,10 +24,10 @@ int main(int argc, char* argv[])
 
     std::thread t([&io_service](){ io_service.run(); });
 
-    char line[chat_message::max_body_length + 1];
+    char line[TcpMessage::max_body_length + 1];
     while (std::cin.getline(line, TcpMessage::max_body_length + 1))
     {
-      chat_message msg;
+      TcpMessage msg;
       msg.body_length(std::strlen(line));
       std::memcpy(msg.body(), line, msg.body_length());
       msg.encode_header();

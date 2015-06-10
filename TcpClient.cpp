@@ -1,5 +1,6 @@
 
 #include "TcpClient.hpp"
+#include "vendor/pp-ne-oculus-server/TcpMessage.hpp"
 
 
 TcpClient::TcpClient(boost::asio::io_service& io_service,
@@ -10,7 +11,7 @@ TcpClient::TcpClient(boost::asio::io_service& io_service,
   do_connect(endpoint_iterator);
 }
 
-void TcpClient::write(const chat_message& msg)
+void TcpClient::write(const TcpMessage& msg)
 {
   io_service_.post(
       [this, msg]()
@@ -44,7 +45,7 @@ void TcpClient::do_connect(tcp::resolver::iterator endpoint_iterator)
 void TcpClient::do_read_header()
 {
   boost::asio::async_read(socket_,
-      boost::asio::buffer(read_msg_.data(), chat_message::header_length),
+      boost::asio::buffer(read_msg_.data(), TcpMessage::header_length),
       [this](boost::system::error_code ec, std::size_t /*length*/)
       {
         if (!ec && read_msg_.decode_header())

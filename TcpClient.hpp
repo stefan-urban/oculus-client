@@ -18,11 +18,13 @@
 #include <iostream>
 #include <thread>
 #include <boost/asio.hpp>
-#include "chat_message.hpp"
+
+#include "vendor/pp-ne-oculus-server/TcpMessage.hpp"
+
 
 using boost::asio::ip::tcp;
 
-typedef std::deque<chat_message> chat_message_queue;
+typedef std::deque<TcpMessage> TcpMessageQueue;
 
 class TcpClient
 {
@@ -30,7 +32,7 @@ public:
   TcpClient(boost::asio::io_service& io_service,
       tcp::resolver::iterator endpoint_iterator);
 
-  void write(const chat_message& msg);
+  void write(const TcpMessage& msg);
   void close();
 
 private:
@@ -42,8 +44,8 @@ private:
 private:
     boost::asio::io_service& io_service_;
     tcp::socket socket_;
-    chat_message read_msg_;
-    chat_message_queue write_msgs_;
+    TcpMessage read_msg_;
+    TcpMessageQueue write_msgs_;
 };
 
 

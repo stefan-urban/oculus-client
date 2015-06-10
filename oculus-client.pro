@@ -9,8 +9,10 @@ LIBS += -lboost_system -lboost_thread
 
 SOURCES += \
     main.cpp \
-    TcpClient.cpp
+    TcpClient.cpp \
+    vendor/pp-ne-oculus-server/TcpMessage.cpp
 
 HEADERS += \
-    TcpClient.hpp
+    TcpClient.hpp \
+    vendor/pp-ne-oculus-server/TcpMessage.hpp
 
