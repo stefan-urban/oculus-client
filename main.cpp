@@ -32,9 +32,6 @@ int main(int argc, char* argv[])
         while (std::cin.getline(line, TcpMessage::max_body_length + 1))
         {
             TcpMessage msg;
-            msg.body_length(std::strlen(line));
-            std::memcpy(msg.body(), line, msg.body_length());
-            msg.encode_header();
             c.write(msg);
 
             // Wait 10 ms

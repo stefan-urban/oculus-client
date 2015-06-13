@@ -1,6 +1,7 @@
 
 #include "TcpClient.hpp"
 #include "vendor/pp-ne-oculus-server/TcpMessage.hpp"
+#include "vendor/pp-ne-oculus-server/Message_EventCollection.hpp"
 
 
 TcpClient::TcpClient(boost::asio::io_service& io_service,
@@ -67,8 +68,17 @@ void TcpClient::do_read_body()
       {
         if (!ec)
         {
-            std::cout.write(read_msg_.body(), read_msg_.body_length());
-            std::cout << "\n";
+            std::string const data = std::string(read_msg_.body());
+
+            Message_EventCollection msg_events;
+            msg_events.unserialize(&data);
+
+            for(const Edvs::Event& e : msg_events.events())
+            {
+                printf("id: %u | x:%u y:%u | p:%u t:%u", e.id, e.x, e.y, e.parity, e.t);
+                std::cout << std::endl;
+            }
+
             do_read_header();
         }
         else
