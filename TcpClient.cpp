@@ -9,7 +9,8 @@ TcpClient::TcpClient(boost::asio::io_service& io_service,
   : io_service_(io_service),
     socket_(io_service)
 {
-    event_handler = (EdvsImage* [7]) ehandler;
+    // TODO
+    //event_handler = (EdvsImage* [7]) ehandler;
 
     do_connect(endpoint_iterator);
 }
