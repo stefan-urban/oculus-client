@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
-#include <OVR_CAPI.h>
+#include <OVR_CAPI_GL.h>
 
 #define GL_GLEXT_PROTOTYPES
 #include <GLFW/glfw3.h>
@@ -71,6 +71,10 @@ void oculus_rift_app()
 
             if (glfw_init_status == GL_TRUE)
             {
+                // More than OpenGL 3.3 is not possible with Intel HD Graphics
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
                 // Get Oculus Rift window
                 int count;
                 GLFWmonitor** monitors = glfwGetMonitors(&count);
@@ -111,14 +115,36 @@ void oculus_rift_app()
                     glfwMakeContextCurrent(window);
                     glfwSwapInterval(1);
 
-                    //ovrHmd_AttachToWindow(hmd, window, nullptr, nullptr);
-                    ovrHmd_ConfigureTracking(hmd, 128, 0);
 
+                    // Configure tracking
+                    if (!ovrHmd_ConfigureTracking(hmd,
+                            ovrTrackingCap_Orientation | ovrTrackingCap_Position | ovrTrackingCap_MagYawCorrection, 0))
+                    {
+                        std::cout << "Could not configure tracking!" << std::endl;
+                        return;
+                    }
 
-                    GLuint vbo = 0;
-                    glGenBuffers(1, &vbo);
+                    // Configure rendering with OpenGL
+                    ovrGLConfig cfg;
 
-                    static bool sw = false;
+                    ovrSizei buffer_size;
+                    buffer_size.w = resolution.w;
+                    buffer_size.h = resolution.h;
+
+                    cfg.OGL.Header.API = ovrRenderAPI_OpenGL;
+                    cfg.OGL.Header.BackBufferSize = buffer_size;
+                    cfg.OGL.Header.Multisample = 0;
+
+                    int distortionCaps = 0
+                        | ovrDistortionCap_Vignette
+                        | ovrDistortionCap_Overdrive
+                        | ovrDistortionCap_TimeWarp
+                        ;
+
+                    ovrEyeRenderDesc eyeRenderDescs[2];
+
+                    ovrBool result = ovrHmd_ConfigureRendering(hmd, &cfg.Config, distortionCaps,
+                                                                        hmd->MaxEyeFov, eyeRenderDescs);
 
                     // Stop application if window is closed
                     while (!glfwWindowShouldClose(window))
@@ -132,23 +158,9 @@ void oculus_rift_app()
                         glClear(GL_COLOR_BUFFER_BIT);
                         glClearColor(0.0f, 0.4f, 0.74f, 0.0f);
 
-
-
-                        glBindBuffer(GL_ARRAY_BUFFER, vbo); //Bind GL_ARRAY_BUFFER to our handle
-                        glEnableVertexAttribArray(0); //?
-                        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); //Information about the array, 3 points for each vertex, using the float type, don't normalize, no stepping, and an offset of 0. I don't know what the first parameter does however, and how does this function know which array to deal with (does it always assume we're talking about GL_ARRAY_BUFFER?
-
-
-
-                        if (sw)
-                            glDrawArrays(GL_POINTS, 0, 1); //Draw the vertices, once again how does this know which vertices to draw? (Does it always use the ones in GL_ARRAY_BUFFER)
-                        sw = !sw;
-
-                        glDisableVertexAttribArray(0); //?
-                        glBindBuffer(GL_ARRAY_BUFFER, 0); //Unbind
-
-
                         //ovrTrackingState tracking_state = ovrHmd_GetTrackingState(hmd, 0.);
+
+                        printf("%s\n", glGetString(GL_VERSION));
 
                         // Show frame
                         glfwSwapBuffers(window);
@@ -162,7 +174,7 @@ void oculus_rift_app()
             }
 
             // Destroy oculus
-            ovrHmd_Destroy(hmd);
+//            ovrHmd_Destroy(hmd); // wild segmentation fault appears
         }
 
         ovr_Shutdown();
