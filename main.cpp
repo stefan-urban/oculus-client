@@ -7,6 +7,7 @@
 #include "EdvsImage.hpp"
 #include "TcpClient.hpp"
 
+#include "EdvsRiftApp.h"
 #include "PhotoSphereExample.h"
 
 
@@ -50,7 +51,7 @@ int oculus_rift_app()
 
     try
     {
-        result = PhotoSphereExample().run();
+        result = EdvsRiftApp().run();
     }
     catch (std::exception & error)
     {

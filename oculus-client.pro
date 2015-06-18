@@ -41,7 +41,8 @@ SOURCES += \
     PhotoSphereExample.cpp \
     Platform.cpp \
     Statics.cpp \
-    Utils.cpp
+    Utils.cpp \
+    EdvsRiftApp.cpp
 
 HEADERS += \
     TcpClient.hpp \
@@ -85,4 +86,5 @@ HEADERS += \
     PhotoSphereExample.h \
     Platform.h \
     Types.h \
-    Utils.h
+    Utils.h \
+    EdvsRiftApp.h
