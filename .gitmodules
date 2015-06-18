@@ -5,11 +5,11 @@
 	path = vendor/edvstools
 	url = https://github.com/Danvil/edvstools.git
 [submodule "vendor/OculusSDK"]
-	path = libraries/OculusSDK
+	path = vendor/OculusSDK
 	url = https://github.com/jherico/OculusSDK.git
 [submodule "vendor/glfw"]
-	path = libraries/glfw
+	path = vendor/glfw
 	url = https://github.com/glfw/glfw.git
 [submodule "vendor/oglplus"]
-	path = libraries/oglplus
+	path = vendor/oglplus
 	url = https://github.com/matus-chochlik/oglplus.git
