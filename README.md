@@ -2,16 +2,7 @@
 Oculus Rift - eDVS Robot - Client Software
 ==========================================
 
-
-Requirements:
- - boost libraries
- - libglew-dev
- - libxinerama-dev
- - libxcursor-dev
-
-```
-sudo apt install freeglut3-dev libboost-all-dev libglew-dev
-```
+Will not work in Intel HD integrated graphic adapters!
 
 ### Oculus Basis Application from "Oculus Rift In Action"
 Extracted from https://github.com/OculusRiftInAction/OculusRiftInAction which is part of an upcoming book by Bradley Austin Davis, Karen Bryla, and Phillips Alexander Benton: [Oculus Rift in Action](http://www.manning.com/bdavis/)
