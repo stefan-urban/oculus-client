@@ -12,6 +12,14 @@ LIBS += -lopencv_core -lopencv_highgui -lopencv_imgproc
 LIBS += -lOpenCTM -L/usr/local/lib/
 
 
+install_it.path = $$OUT_PWD/resources/
+install_it.files  = resources/sphere.ctm
+install_it.files += resources/Textured.fs
+install_it.files += resources/Textured.vs
+
+INSTALLS += \
+    install_it
+
 SOURCES += \
     main.cpp \
     TcpClient.cpp \
@@ -88,3 +96,8 @@ HEADERS += \
     Types.h \
     Utils.h \
     EdvsRiftApp.h
+
+DISTFILES += \
+    resources/sphere.ctm \
+    resources/Textured.fs \
+    resources/Textured.vs

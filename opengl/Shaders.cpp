@@ -22,90 +22,90 @@
 namespace oria
 {
 
-void compileProgram(ProgramPtr & result, std::string vs, std::string fs)
-{
-    using namespace oglplus;
-    try
+    void compileProgram(ProgramPtr & result, std::string vs, std::string fs)
     {
-        result = ProgramPtr(new Program());
-        // attach the shaders to the program
-        result->AttachShader(
-            VertexShader()
-            .Source(GLSLSource(vs))
-            .Compile()
-        );
-        result->AttachShader(
-            FragmentShader()
-            .Source(GLSLSource(fs))
-            .Compile()
-        );
-        result->Link();
-    }
-    catch (ProgramBuildError & err)
-    {
-        SAY_ERR((const char*)err.Message);
-        result.reset();
-    }
-}
-
-
-ProgramPtr loadProgram(Resource vs, Resource fs)
-{
-    typedef std::unordered_map<std::string, ProgramPtr> ProgramMap;
-
-    static ProgramMap programs;
-    static bool registeredShutdown = false;
-    if (!registeredShutdown)
-    {
-        Platform::addShutdownHook([&]
+        using namespace oglplus;
+        try
         {
-            programs.clear();
-        });
-        registeredShutdown = true;
+            result = ProgramPtr(new Program());
+            // attach the shaders to the program
+            result->AttachShader(
+                VertexShader()
+                .Source(GLSLSource(vs))
+                .Compile()
+            );
+            result->AttachShader(
+                FragmentShader()
+                .Source(GLSLSource(fs))
+                .Compile()
+            );
+            result->Link();
+        }
+        catch (ProgramBuildError & err)
+        {
+            SAY_ERR((const char*)err.Message);
+            result.reset();
+        }
     }
 
-    std::string key = Resources::getResourcePath(vs) + ":" +
-                      Resources::getResourcePath(fs);
-    if (!programs.count(key))
+
+    ProgramPtr loadProgram(Resource vs, Resource fs)
+    {
+        typedef std::unordered_map<std::string, ProgramPtr> ProgramMap;
+
+        static ProgramMap programs;
+        static bool registeredShutdown = false;
+        if (!registeredShutdown)
+        {
+            Platform::addShutdownHook([&]
+            {
+                programs.clear();
+            });
+            registeredShutdown = true;
+        }
+
+        std::string key = Resources::getResourcePath(vs) + ":" +
+                          Resources::getResourcePath(fs);
+        if (!programs.count(key))
+        {
+            ProgramPtr result;
+            compileProgram(result,
+                           Platform::getResourceString(vs),
+                           Platform::getResourceString(fs));
+            // FIXME
+            // Caching shaders is problematic, since it requires you to set ALL
+            // uniforms any time you use the shader, because you don't know if you're
+            // sharing the shader instance with something else in the program which
+            // is using the same shader for a different purpose, and with different
+            // uniforms.
+            // Need to decide if it's better policy to cache shaders and expect full uniform
+            // initialization every time we use them or to prevent shader caching.
+            // For now it's disabled.
+            // programs[key] = result;
+            return result;
+        }
+        return programs[key];
+    }
+
+    ProgramPtr loadProgram(const std::string & vsFile, const std::string & fsFile)
     {
         ProgramPtr result;
         compileProgram(result,
-                       Platform::getResourceString(vs),
-                       Platform::getResourceString(fs));
-        // FIXME
-        // Caching shaders is problematic, since it requires you to set ALL
-        // uniforms any time you use the shader, because you don't know if you're
-        // sharing the shader instance with something else in the program which
-        // is using the same shader for a different purpose, and with different
-        // uniforms.
-        // Need to decide if it's better policy to cache shaders and expect full uniform
-        // initialization every time we use them or to prevent shader caching.
-        // For now it's disabled.
-        // programs[key] = result;
+                       oria::readFile(vsFile),
+                       oria::readFile(fsFile));
         return result;
     }
-    return programs[key];
-}
 
-ProgramPtr loadProgram(const std::string & vsFile, const std::string & fsFile)
-{
-    ProgramPtr result;
-    compileProgram(result,
-                   oria::readFile(vsFile),
-                   oria::readFile(fsFile));
-    return result;
-}
-
-UniformMap getActiveUniforms(ProgramPtr & program)
-{
-    UniformMap activeUniforms;
-    size_t uniformCount = program->ActiveUniforms().Size();
-    for (size_t i = 0; i < uniformCount; ++i)
+    UniformMap getActiveUniforms(ProgramPtr & program)
     {
-        std::string name = program->ActiveUniforms().At(i).Name();
-        activeUniforms[name] = program->ActiveUniforms().At(i).Index();
+        UniformMap activeUniforms;
+        size_t uniformCount = program->ActiveUniforms().Size();
+        for (size_t i = 0; i < uniformCount; ++i)
+        {
+            std::string name = program->ActiveUniforms().At(i).Name();
+            activeUniforms[name] = program->ActiveUniforms().At(i).Index();
+        }
+        return activeUniforms;
     }
-    return activeUniforms;
-}
 
 }

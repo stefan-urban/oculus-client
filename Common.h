@@ -58,6 +58,9 @@
 #include <oglplus/bound/texture.hpp>
 #include <oglplus/bound/framebuffer.hpp>
 #include <oglplus/bound/renderbuffer.hpp>
+#include <oglplus/bound/buffer.hpp>
+#include <oglplus/shapes/sphere.hpp>
+#include <oglplus/shapes/cube.hpp>
 #include <oglplus/shapes/wrapper.hpp>
 
 #include <glm/glm.hpp>

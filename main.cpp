@@ -52,6 +52,7 @@ int oculus_rift_app()
     try
     {
         result = EdvsRiftApp().run();
+//        result = PhotoSphereExample().run();
     }
     catch (std::exception & error)
     {
