@@ -60,8 +60,10 @@ int oculus_rift_app()
 
     try
     {
-        result = EdvsRiftApp().run();
-//        result = PhotoSphereExample().run();
+        EdvsRiftApp rift_app(&images);
+
+
+        result = rift_app.run();
     }
     catch (std::exception & error)
     {

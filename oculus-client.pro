@@ -24,7 +24,6 @@ SOURCES += \
     main.cpp \
     TcpClient.cpp \
     EdvsImage.cpp \
-    EdvsSphericImage.cpp \
     EdvsEventHandler.cpp \
     vendor/edvstools/Edvs/EventIO.cpp \
     vendor/edvstools/Edvs/EventStream.cpp \
@@ -55,7 +54,6 @@ SOURCES += \
 HEADERS += \
     TcpClient.hpp \
     EdvsImage.hpp \
-    EdvsSphericImage.hpp \
     EdvsEventHandler.hpp \
     vendor/edvstools/Edvs/edvs.h \
     vendor/edvstools/Edvs/edvs_impl.h \

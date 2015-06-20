@@ -1,4 +1,5 @@
 #include "EdvsRiftApp.h"
+#include "Common.h"
 
 using namespace oglplus;
 
@@ -23,7 +24,8 @@ void EdvsRiftApp::drawSphere()
         oria::renderGeometry(geometry, program);
     });
 
-    oglplus::DefaultTexture().Bind(oglplus::Texture::Target::_2D);
+
+    //oglplus::DefaultTexture().Bind(oglplus::Texture::Target::_2D);
 }
 
 void EdvsRiftApp::renderScene(/*const glm::mat4 & projection, const glm::mat4 & headPose*/)
@@ -45,7 +47,13 @@ void EdvsRiftApp::renderScene(/*const glm::mat4 & projection, const glm::mat4 & 
         drawSphere();
     });
 
-    Context::Enable(Capability::CullFace);
+
+    // Text
+    //const std::string text = "teststring";
+    //glm::vec3 cursor = glm::vec3(-0.5, -0.5, 0);
+    //oria::renderString(text, cursor, fontsize, Resource::FONTS_INCONSOLATA_MEDIUM_SDFF);
+
+    //Context::Enable(Capability::CullFace);
 
 }
 
@@ -69,6 +77,12 @@ void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
             return;
         case GLFW_KEY_Z:
             trans -= 5.f;
+            return;
+        case GLFW_KEY_E:
+            fontsize += 2.f;
+            return;
+        case GLFW_KEY_W:
+            fontsize -= 2.f;
             return;
         }
     }

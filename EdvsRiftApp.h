@@ -2,13 +2,14 @@
 #define EDVSRIFTAPP_H
 
 #include "Common.h"
-#include "EdvsSphericImage.hpp"
+#include "EdvsImage.hpp"
 
 
 class EdvsRiftApp : public RiftApp
 {
 public:
-    EdvsRiftApp()
+    EdvsRiftApp(std::vector<EdvsImage> *images)
+        : images_(*images)
     {
 
     }
@@ -20,6 +21,9 @@ public:
 private:
     float projection_scale = 1.0f;
     float trans = 0.0f;
+    float fontsize = 20.0f;
+
+    std::vector<EdvsImage> images_;
 };
 
 

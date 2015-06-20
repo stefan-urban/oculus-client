@@ -14,11 +14,14 @@
 class EdvsImage
 {
 public:
+    EdvsImage();
     void handle_event(Edvs::Event event);
     EdvsEventsCollection *events();
 
 private:
     EdvsEventsCollection events_;
+
+
     void clear_old_events();
 
     int decay = 0.5;
