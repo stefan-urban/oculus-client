@@ -17,20 +17,29 @@
 boost::asio::io_service io_service;
 
 
+// Single eDVS camera images
+std::vector<EdvsImage> images;
+
 void edvs_client_app(int argc, char* argv[])
 {
     if (argc != 3)
     {
+        std::cout << "TCP connection failed!" << std::endl;
         return;
     }
 
-    // Event handler (will be images)
-    EdvsImage images[7];
+    // Setup 7 images
+    EdvsImage image;
+
+    for (int i = 0; i < 7; i++)
+    {
+        images.push_back(image);
+    }
 
     // Setup TCP connection
     boost::asio::ip::tcp::resolver resolver(io_service);
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
-    TcpClient c(io_service, endpoint_iterator, images);
+    TcpClient c(io_service, endpoint_iterator, &images);
 
     // Start client
     io_service.run();

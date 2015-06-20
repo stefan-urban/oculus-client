@@ -23,10 +23,6 @@ INSTALLS += \
 SOURCES += \
     main.cpp \
     TcpClient.cpp \
-    vendor/pp-ne-oculus-server/TcpMessage.cpp \
-    vendor/pp-ne-oculus-server/EdvsEventsCollection.cpp \
-    vendor/pp-ne-oculus-server/Message.cpp \
-    vendor/pp-ne-oculus-server/Message_EventCollection.cpp \
     EdvsImage.cpp \
     EdvsSphericImage.cpp \
     EdvsEventHandler.cpp \
@@ -50,15 +46,14 @@ SOURCES += \
     Platform.cpp \
     Statics.cpp \
     Utils.cpp \
-    EdvsRiftApp.cpp
+    EdvsRiftApp.cpp \
+    vendor/oculus-server/EdvsEventsCollection.cpp \
+    vendor/oculus-server/Message.cpp \
+    vendor/oculus-server/Message_EventCollection.cpp \
+    vendor/oculus-server/TcpMessage.cpp
 
 HEADERS += \
     TcpClient.hpp \
-    vendor/pp-ne-oculus-server/TcpMessage.hpp \
-    vendor/pp-ne-oculus-server/EdvsEventsCollection.h \
-    vendor/pp-ne-oculus-server/EdvsEventsCollection.hpp \
-    vendor/pp-ne-oculus-server/Message.hpp \
-    vendor/pp-ne-oculus-server/Message_EventCollection.hpp \
     EdvsImage.hpp \
     EdvsSphericImage.hpp \
     EdvsEventHandler.hpp \
@@ -95,7 +90,11 @@ HEADERS += \
     Platform.h \
     Types.h \
     Utils.h \
-    EdvsRiftApp.h
+    EdvsRiftApp.h \
+    vendor/oculus-server/EdvsEventsCollection.hpp \
+    vendor/oculus-server/Message.hpp \
+    vendor/oculus-server/Message_EventCollection.hpp \
+    vendor/oculus-server/TcpMessage.hpp
 
 DISTFILES += \
     resources/sphere.ctm \

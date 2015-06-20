@@ -1,6 +1,3 @@
-[submodule "vendor/pp-ne-oculus-server"]
-	path = vendor/pp-ne-oculus-server
-	url = https://github.com/stefan-urban/oculus-server.git
 [submodule "vendor/edvstools"]
 	path = vendor/edvstools
 	url = https://github.com/Danvil/edvstools.git
@@ -13,3 +10,6 @@
 [submodule "vendor/oglplus"]
 	path = vendor/oglplus
 	url = https://github.com/matus-chochlik/oglplus.git
+[submodule "vendor/oculus-server"]
+	path = vendor/oculus-server
+	url = https://github.com/stefan-urban/oculus-server.git

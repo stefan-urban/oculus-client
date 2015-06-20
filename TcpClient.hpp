@@ -20,7 +20,7 @@
 #include <boost/asio.hpp>
 
 #include "EdvsImage.hpp"
-#include "vendor/pp-ne-oculus-server/TcpMessage.hpp"
+#include "vendor/oculus-server/TcpMessage.hpp"
 
 
 using boost::asio::ip::tcp;
@@ -31,7 +31,7 @@ class TcpClient
 {
 public:
   TcpClient(boost::asio::io_service& io_service,
-      tcp::resolver::iterator endpoint_iterator, EdvsImage event_handler[7]);
+      tcp::resolver::iterator endpoint_iterator, std::vector<EdvsImage> *images);
 
   void write(const TcpMessage& msg);
   void close();
@@ -47,7 +47,7 @@ private:
     tcp::socket socket_;
     TcpMessage read_msg_;
     TcpMessageQueue write_msgs_;
-    EdvsImage *event_handler[7];
+    std::vector<EdvsImage> images_;
 };
 
 

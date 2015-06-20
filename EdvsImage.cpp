@@ -1,22 +1,17 @@
 #include "EdvsImage.hpp"
 
 
-
-EdvsImage::EdvsImage()
+void EdvsImage::handle_event(Edvs::Event event)
 {
-    image = new boost::numeric::ublas::matrix<weighted_events_list_t>(3,3);
+    events_.push_back(event);
 }
 
-void EdvsImage::handle_event(Edvs::Event *event)
+EdvsEventsCollection *EdvsImage::events()
 {
-    weighted_event_t e;
-    e.parity = (bool) event->parity;
-    e.time = boost::chrono::microseconds(event->t);
-
-    image->at_element(event->x, event->y).push_back(e);
+    return &events_;
 }
 
-boost::numeric::ublas::matrix<weighted_events_list_t> *EdvsImage::get_image()
+void EdvsImage::clear_old_events()
 {
-    return image;
+    events_.clear();
 }

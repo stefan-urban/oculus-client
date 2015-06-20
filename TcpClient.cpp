@@ -1,16 +1,14 @@
 
 #include "TcpClient.hpp"
-#include "vendor/pp-ne-oculus-server/TcpMessage.hpp"
-#include "vendor/pp-ne-oculus-server/Message_EventCollection.hpp"
+#include "vendor/oculus-server/TcpMessage.hpp"
+#include "vendor/oculus-server/Message_EventCollection.hpp"
 
 
-TcpClient::TcpClient(boost::asio::io_service& io_service,
-    tcp::resolver::iterator endpoint_iterator, EdvsImage ehandler[7])
+TcpClient::TcpClient(boost::asio::io_service& io_service, tcp::resolver::iterator endpoint_iterator, std::vector<EdvsImage> *images)
   : io_service_(io_service),
     socket_(io_service)
 {
-    // TODO
-    //event_handler = (EdvsImage* [7]) ehandler;
+    images_ = *images;
 
     do_connect(endpoint_iterator);
 }
@@ -78,10 +76,14 @@ void TcpClient::do_read_body()
 
             for(Edvs::Event& e : msg_events.events())
             {
-                printf("id: %u | x:%u y:%u | p:%u t:%u", e.id, e.x, e.y, e.parity, e.t);
-
-                event_handler[e.id]->handle_event(&e);
-                std::cout << std::endl;
+                try
+                {
+                    images_[e.id].handle_event(e);
+                }
+                catch (std::out_of_range& /* err */)
+                {
+                    // Good heavens, what an unpleasant surprise
+                }
             }
 
             do_read_header();
