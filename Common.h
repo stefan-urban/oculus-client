@@ -69,6 +69,7 @@
 #include <glm/gtc/noise.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtx/norm.hpp>
+#include <glm/gtx/polar_coordinates.hpp>
 
 // Most commonly used
 using glm::ivec3;

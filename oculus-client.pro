@@ -14,8 +14,10 @@ LIBS += -lOpenCTM -L/usr/local/lib/
 
 install_it.path = $$OUT_PWD/resources/
 install_it.files  = resources/sphere.ctm
-install_it.files += resources/Textured.fs
-install_it.files += resources/Textured.vs
+install_it.files += resources/sphere.fs
+install_it.files += resources/sphere.vs
+install_it.files += resources/edvs_events.fs
+install_it.files += resources/edvs_events.vs
 
 INSTALLS += \
     install_it
@@ -96,5 +98,7 @@ HEADERS += \
 
 DISTFILES += \
     resources/sphere.ctm \
-    resources/Textured.fs \
-    resources/Textured.vs
+    resources/sphere.fs \
+    resources/sphere.vs \
+    resources/edvs_events.fs \
+    resources/edvs_events.vs
