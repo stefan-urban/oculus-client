@@ -31,7 +31,13 @@ class TcpClient
 {
 public:
   TcpClient(boost::asio::io_service& io_service,
-      tcp::resolver::iterator endpoint_iterator, std::vector<EdvsImage> *images);
+      tcp::resolver::iterator endpoint_iterator, std::vector<Edvs::Event> *events)
+      : io_service_(io_service),
+        socket_(io_service),
+        events_(events)
+    {
+        do_connect(endpoint_iterator);
+    }
 
   void write(const TcpMessage& msg);
   void close();
@@ -47,7 +53,7 @@ private:
     tcp::socket socket_;
     TcpMessage read_msg_;
     TcpMessageQueue write_msgs_;
-    std::vector<EdvsImage> images_;
+    std::vector<Edvs::Event> *events_;
 };
 
 

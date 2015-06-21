@@ -1,7 +1,8 @@
 #version 330
 
+//uniform float x_start[128];
+
 in vec2 vTexCoord;
-in float test;
 
 out vec4 vFragColor;
 

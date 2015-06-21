@@ -4,15 +4,6 @@
 #include "vendor/oculus-server/Message_EventCollection.hpp"
 
 
-TcpClient::TcpClient(boost::asio::io_service& io_service, tcp::resolver::iterator endpoint_iterator, std::vector<EdvsImage> *images)
-  : io_service_(io_service),
-    socket_(io_service)
-{
-    images_ = *images;
-
-    do_connect(endpoint_iterator);
-}
-
 void TcpClient::write(const TcpMessage& msg)
 {
   io_service_.post(
@@ -76,14 +67,7 @@ void TcpClient::do_read_body()
 
             for(Edvs::Event& e : msg_events.events())
             {
-                try
-                {
-                    images_[e.id].handle_event(e);
-                }
-                catch (std::out_of_range& /* err */)
-                {
-                    // Good heavens, what an unpleasant surprise
-                }
+                events_->push_back(e);
             }
 
             do_read_header();

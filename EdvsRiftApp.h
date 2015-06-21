@@ -9,8 +9,8 @@
 class EdvsRiftApp : public RiftApp
 {
 public:
-    EdvsRiftApp(std::vector<EdvsImage> *images)
-        : images_(*images)
+    EdvsRiftApp(std::vector<Edvs::Event> *events)
+        : events_(events)
     {
 
     }
@@ -25,15 +25,9 @@ private:
     float trans = 0.0f;
     float fontsize = 20.0f;
 
-    std::vector<EdvsImage> images_;
+    std::vector<Edvs::Event> *events_;
 
     void drawSphere();
-    void drawEdvsEvent(glm::mat4 transform, float intensity);
-
-    std::shared_ptr<oglplus::VertexArray> vao;
-    std::shared_ptr<oglplus::Buffer> vab;
-
-    std::chrono::system_clock::time_point t_start;
 };
 
 

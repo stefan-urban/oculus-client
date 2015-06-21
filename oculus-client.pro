@@ -99,6 +99,4 @@ HEADERS += \
 DISTFILES += \
     resources/sphere.ctm \
     resources/sphere.fs \
-    resources/sphere.vs \
-    resources/edvs_events.fs \
-    resources/edvs_events.vs
+    resources/sphere.vs
