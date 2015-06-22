@@ -11,9 +11,7 @@ float fov_x;
 float fov_y;
 
 std::vector<float> x_start;
-std::vector<float> x_end;
 std::vector<float> y_start;
-std::vector<float> y_end;
 
 void EdvsRiftApp::initGl()
 {
@@ -24,11 +22,8 @@ void EdvsRiftApp::initGl()
 
     for (int i = 0; i < 128; i++)
     {
-        x_start.push_back((((float)( i - 1) / 128.0) * 2.0 - 1.0) * fov_x);
-        x_end.push_back((((float) i / 128.0) * 2.0 - 1.0) * fov_x);
-
-        y_start.push_back((((float)( i - 1) / 128.0) * 2.0 - 1.0) * fov_y);
-        y_end.push_back((((float) i / 128.0) * 2.0 - 1.0) * fov_y);
+        x_start.push_back((((float) i / 128.0) - 0.5) * fov_x);
+        y_start.push_back((((float) i / 128.0) - 0.5) * fov_y);
     }
 
 }
@@ -53,14 +48,12 @@ void EdvsRiftApp::drawSphere()
     mv.withPush([&]
     {
         // Invert the sphere to see its insides
-        mv.scale(vec3(-1));
+        mv.scale(vec3(1));
         oria::renderGeometry(geometry, program, LambdaList(
         {
             [&] {
-//                oglplus::Uniform<float>(*program, "x_start").Set(x_start);
-//                oglplus::Uniform<float>(*program, "x_end").Set(x_end);
-//                oglplus::Uniform<float>(*program, "y_start").Set(y_start);
-//                oglplus::Uniform<float>(*program, "y_end").Set(y_end);
+                oglplus::Uniform<float>(*program, "x_start").Set(x_start);
+                oglplus::Uniform<float>(*program, "y_start").Set(y_start);
             }
         }));
     });

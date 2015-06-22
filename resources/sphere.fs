@@ -1,8 +1,9 @@
 #version 330
 
-//uniform float x_start[128];
+uniform float x_start[128];
+uniform float y_start[128];
 
-in vec2 vTexCoord;
+in vec3 vPolarCoord;
 
 out vec4 vFragColor;
 
@@ -13,8 +14,35 @@ vec4 colors[2] = vec4[2](
 );
 
 void main() {
-    if (vTexCoord.x > 0.3 && vTexCoord.y < 0.6)
-        vFragColor = colors[0];
-    else
-        vFragColor = colors[1];
+
+    int x = 0, y = 0;
+
+    int i;
+
+    for (i = 0; i < 128; i++)
+    {
+        if (mod(vPolarCoord.y, 0.52) < x_start[i])
+        {
+            x = i;
+            break;
+        }
+    }
+
+    for (i = 0; i < 128; i++)
+    {
+        if (mod(vPolarCoord.z, 0.52) < y_start[i])
+        {
+            y = i;
+            break;
+        }
+    }
+
+    vec4 color = vec4(
+        float(x) / 128,
+        float(y) / 128,
+        0.0f,
+        1.0f
+    );
+
+    vFragColor = color;
 }
