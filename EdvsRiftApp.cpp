@@ -1,8 +1,12 @@
 #include "Common.h"
 #include "EdvsRiftApp.h"
 
+#include <random>
+
 using namespace oglplus;
 
+
+std::vector<Vector<float, 3>> camera_intensity;
 
 void EdvsRiftApp::initGl()
 {
@@ -12,6 +16,15 @@ void EdvsRiftApp::initGl()
 void EdvsRiftApp::update()
 {
     RiftApp::update();
+
+    camera_intensity.clear();
+
+    for (int i = 0; i < 500; i++)
+    {
+        camera_intensity.push_back(Vector<float, 3>(rand() % 128, rand() % 128, 1.0));
+    }
+
+    camera_intensity.push_back(Vector<float, 3>(-1.0, 0.0, 0.0));
 }
 
 void EdvsRiftApp::drawSphere()
@@ -41,6 +54,8 @@ void EdvsRiftApp::drawSphere()
         //oglplus::Uniform<float>(*program, "fov_x_end").Set(60);
         //oglplus::Uniform<float>(*program, "fov_y_start").Set(-30);
         //oglplus::Uniform<float>(*program, "fov_y_end").Set(30);
+
+        oglplus::Uniform<Vector<float, 3>>(*program, "intensity_map").Set(camera_intensity);
 
         geometry->Use();
         geometry->Draw();

@@ -96,6 +96,5 @@ HEADERS += \
     vendor/oculus-server/TcpMessage.hpp
 
 DISTFILES += \
-    resources/sphere.ctm \
     resources/sphere.fs \
     resources/sphere.vs
