@@ -1,31 +1,12 @@
-#include "EdvsRiftApp.h"
 #include "Common.h"
-
-#include <chrono>
-#include <glm/gtc/matrix_transform.hpp>
+#include "EdvsRiftApp.h"
 
 using namespace oglplus;
 
 
-float fov_x;
-float fov_y;
-
-std::vector<float> x_start;
-std::vector<float> y_start;
-
 void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
-
-    fov_x = 60.0;
-    fov_y = 60.0;
-
-    for (int i = 0; i < 128; i++)
-    {
-        x_start.push_back((((float) i / 128.0) - 0.5) * fov_x);
-        y_start.push_back((((float) i / 128.0) - 0.5) * fov_y);
-    }
-
 }
 
 void EdvsRiftApp::update()
@@ -36,7 +17,7 @@ void EdvsRiftApp::update()
 void EdvsRiftApp::drawSphere()
 {
     static ProgramPtr program = oria::loadProgram("./resources/sphere.vs", "./resources/sphere.fs");
-    static ShapeWrapperPtr geometry = oria::loadSphere({ "Position", "TexCoord" }, program);
+    static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
 
     Platform::addShutdownHook([]
     {
@@ -48,14 +29,24 @@ void EdvsRiftApp::drawSphere()
     mv.withPush([&]
     {
         // Invert the sphere to see its insides
-        mv.scale(vec3(1));
-        oria::renderGeometry(geometry, program, LambdaList(
-        {
-            [&] {
-                oglplus::Uniform<float>(*program, "x_start").Set(x_start);
-                oglplus::Uniform<float>(*program, "y_start").Set(y_start);
-            }
-        }));
+        mv.scale(vec3(-1));
+
+        program->Use();
+
+        Mat4Uniform(*program, "ModelView").Set(Stacks::modelview().top());
+        Mat4Uniform(*program, "Projection").Set(Stacks::projection().top());
+
+        // FoVs from binary shape file! Do not change if you do not know what you're doing!
+        //oglplus::Uniform<float>(*program, "fov_x_start").Set(0);
+        //oglplus::Uniform<float>(*program, "fov_x_end").Set(60);
+        //oglplus::Uniform<float>(*program, "fov_y_start").Set(-30);
+        //oglplus::Uniform<float>(*program, "fov_y_end").Set(30);
+
+        geometry->Use();
+        geometry->Draw();
+
+        oglplus::NoProgram().Bind();
+        oglplus::NoVertexArray().Bind();
     });
 
     //oglplus::DefaultTexture().Bind(oglplus::Texture::Target::_2D);
@@ -66,7 +57,7 @@ void EdvsRiftApp::renderScene()
     using namespace oglplus;
 
     Context::Clear().DepthBuffer();
-    glClearColor(0.0f, 0.2f, 0.5f, 0.0f);
+    glClearColor(0.0f, 0.2f, 0.9f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     MatrixStack & mv = Stacks::modelview();
@@ -76,8 +67,12 @@ void EdvsRiftApp::renderScene()
 
     mv.withPush([&]
     {
-        mv.scale(projection_scale);
-        mv.preTranslate(glm::vec3(0, 0, -5.f + trans));
+        //mv.scale(projection_scale + 0.1f);
+
+        mv.preTranslate(glm::vec3(0, 0, 0.f + trans));
+
+        mv.scale(10.1f);
+        mv.rotate(-90.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
         drawSphere();
     });
 
@@ -91,10 +86,10 @@ void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
         switch (key)
         {
         case GLFW_KEY_O:
-            projection_scale += 0.1f;
+            projection_scale += 1.f;
             return;
         case GLFW_KEY_L:
-            projection_scale -= 0.1f;
+            projection_scale -= 1.f;
             return;
         case GLFW_KEY_I:
             trans += 1.f;
@@ -103,10 +98,10 @@ void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
             trans -= 1.f;
             return;
         case GLFW_KEY_U:
-            fontsize += 2.f;
+            rotation += 15.f * DEGREES_TO_RADIANS;
             return;
         case GLFW_KEY_J:
-            fontsize -= 2.f;
+            rotation -= 15.f * DEGREES_TO_RADIANS;
             return;
         }
     }

@@ -38,6 +38,8 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <stdexcept>
+#include <system_error>
 
 
 #define HAVE_OPENCV 1
@@ -62,6 +64,10 @@
 #include <oglplus/shapes/sphere.hpp>
 #include <oglplus/shapes/cube.hpp>
 #include <oglplus/shapes/wrapper.hpp>
+#include <oglplus/error/prog_var.hpp>
+#include <oglplus/error/program.hpp>
+#include <oglplus/error/limit.hpp>
+#include <oglplus/opt/application.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -162,3 +168,4 @@ public:
 #ifndef DEGREES_TO_RADIANS
 #define DEGREES_TO_RADIANS (PI / 180.0f)
 #endif
+

@@ -13,11 +13,9 @@ LIBS += -lOpenCTM -L/usr/local/lib/
 
 
 install_it.path = $$OUT_PWD/resources/
-install_it.files  = resources/sphere.ctm
 install_it.files += resources/sphere.fs
 install_it.files += resources/sphere.vs
-install_it.files += resources/edvs_events.fs
-install_it.files += resources/edvs_events.vs
+install_it.files += resources/spherical_calotte.obj
 
 INSTALLS += \
     install_it
@@ -51,7 +49,8 @@ SOURCES += \
     vendor/oculus-server/EdvsEventsCollection.cpp \
     vendor/oculus-server/Message.cpp \
     vendor/oculus-server/Message_EventCollection.cpp \
-    vendor/oculus-server/TcpMessage.cpp
+    vendor/oculus-server/TcpMessage.cpp \
+    Common.cpp
 
 HEADERS += \
     TcpClient.hpp \

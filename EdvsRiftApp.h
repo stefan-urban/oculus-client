@@ -5,6 +5,21 @@
 #include "EdvsImage.hpp"
 
 #include <chrono>
+#include <glm/gtc/matrix_transform.hpp>
+#include <oglplus/shapes/obj_mesh.hpp>
+#include <oglplus/opt/resources.hpp>
+
+
+struct MeshInputFile
+{
+    std::ifstream stream;
+
+    MeshInputFile(void)
+    {
+        oglplus::OpenResourceFile(stream, "resources", "spherical_calotte", ".obj");
+    }
+};
+
 
 class EdvsRiftApp : public RiftApp
 {
@@ -23,11 +38,13 @@ public:
 private:
     float projection_scale = 1.0f;
     float trans = 0.0f;
-    float fontsize = 20.0f;
+    float rotation = 0.0f;
 
     std::vector<Edvs::Event> *events_;
 
     void drawSphere();
+
+    MeshInputFile mesh_input;
 };
 
 
