@@ -11,6 +11,8 @@ std::vector<Vector<float, 3>> camera_intensity;
 void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
+
+    vbo = BufferPtr(new Buffer());
 }
 
 void EdvsRiftApp::update()
@@ -19,7 +21,7 @@ void EdvsRiftApp::update()
 
     camera_intensity.clear();
 
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < 10; i++)
     {
         camera_intensity.push_back(Vector<float, 3>(rand() % 128, rand() % 128, 1.0));
     }
@@ -32,39 +34,60 @@ void EdvsRiftApp::drawSphere()
     static ProgramPtr program = oria::loadProgram("./resources/sphere.vs", "./resources/sphere.fs");
     static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
 
+    // Reset before application exit
     Platform::addShutdownHook([]
     {
         program.reset();
         geometry.reset();
     });
 
+
     MatrixStack & mv = Stacks::modelview();
+
     mv.withPush([&]
     {
-        // Invert the sphere to see its insides
-        mv.scale(vec3(-1));
-
+        // Binds the program
         program->Use();
 
+        // Matrices as uniforms
         Mat4Uniform(*program, "ModelView").Set(Stacks::modelview().top());
         Mat4Uniform(*program, "Projection").Set(Stacks::projection().top());
 
-        // FoVs from binary shape file! Do not change if you do not know what you're doing!
-        //oglplus::Uniform<float>(*program, "fov_x_start").Set(0);
-        //oglplus::Uniform<float>(*program, "fov_x_end").Set(60);
-        //oglplus::Uniform<float>(*program, "fov_y_start").Set(-30);
-        //oglplus::Uniform<float>(*program, "fov_y_end").Set(30);
 
-        oglplus::Uniform<Vector<float, 3>>(*program, "intensity_map").Set(camera_intensity);
-
+        // Make sure VAO is bound
         geometry->Use();
-        geometry->Draw();
 
-        oglplus::NoProgram().Bind();
-        oglplus::NoVertexArray().Bind();
+        // Every pixel is represented by 6 vertexes
+        std::vector<GLfloat> intensities(128*128*6-6);
+
+        for (size_t i = 0; i < intensities.size(); i++)
+        {
+            intensities[i] = 1.0;
+        }
+
+        // TODO: fill image into intensities matrix
+
+        // Bind VBO
+        vbo->Bind(Buffer::Target::Array);
+        Buffer::Data(Buffer::Target::Array, intensities);
+
+        // Setup attribute to access buffer in shader
+        VertexArrayAttrib vbo_attr(*program, "Color");
+        vbo_attr.Setup<GLfloat>(1);
+        vbo_attr.Enable();
+
+        // Draw all elements
+        geometry->Draw();
     });
 
-    //oglplus::DefaultTexture().Bind(oglplus::Texture::Target::_2D);
+    mv.withPush([&]
+    {
+    });
+
+
+    // Unbind
+    oglplus::NoProgram().Bind();
+    oglplus::NoVertexArray().Bind();
 }
 
 void EdvsRiftApp::renderScene()
@@ -87,7 +110,7 @@ void EdvsRiftApp::renderScene()
         mv.preTranslate(glm::vec3(0, 0, 0.f + trans));
 
         mv.scale(10.1f);
-        mv.rotate(-90.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
+        mv.rotate(90.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
         drawSphere();
     });
 
