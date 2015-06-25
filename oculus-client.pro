@@ -93,7 +93,8 @@ HEADERS += \
     vendor/oculus-server/EdvsEventsCollection.hpp \
     vendor/oculus-server/Message.hpp \
     vendor/oculus-server/Message_EventCollection.hpp \
-    vendor/oculus-server/TcpMessage.hpp
+    vendor/oculus-server/TcpMessage.hpp \
+    opengl/Errors.hpp
 
 DISTFILES += \
     resources/sphere.fs \

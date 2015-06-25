@@ -18,6 +18,7 @@
  ************************************************************************************/
 
 #include "Common.h"
+#include "opengl/Errors.hpp"
 
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -81,6 +82,8 @@ GlfwApp::~GlfwApp()
 
 int GlfwApp::run()
 {
+    std::ostream& errstr = std::cerr;
+
     try
     {
         preCreate();
@@ -124,9 +127,49 @@ int GlfwApp::run()
             }
         }
     }
-    catch (std::runtime_error & err)
+    catch(oglplus::ProgVarError& pve)
     {
-        SAY(err.what());
+        errstr << "Program variable error" << std::endl;
+        oglplus::print_error_common(pve, errstr);
+    }
+    catch(oglplus::ProgramBuildError& pbe)
+    {
+        errstr << "Program build error" << std::endl;
+        oglplus::print_error_common(pbe, errstr);
+    }
+    catch(oglplus::LimitError& le)
+    {
+        errstr << "Limit error" << std::endl;
+        oglplus::print_error_common(le, errstr);
+    }
+    catch(oglplus::ObjectError& oe)
+    {
+        errstr << "Object error" << std::endl;
+        oglplus::print_error_common(oe, errstr);
+    }
+    catch(oglplus::Error& err)
+    {
+        errstr << "GL error" << std::endl;
+        oglplus::print_error_common(err, errstr);
+    }
+    catch(std::system_error& sye)
+    {
+        errstr << "System error" << std::endl;
+        oglplus::print_std_error_common(sye, errstr);
+        errstr << "Error code: " << sye.code() << std::endl;
+        errstr << std::endl;
+    }
+    catch(std::runtime_error& rte)
+    {
+        errstr << "Runtime error" << std::endl;
+        oglplus::print_std_error_common(rte, errstr);
+        errstr << std::endl;
+    }
+    catch(std::exception& se)
+    {
+        errstr << "Error" << std::endl;
+        oglplus::print_std_error_common(se, errstr);
+        errstr << std::endl;
     }
 
     return 0;
