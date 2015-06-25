@@ -43,9 +43,7 @@ private:
     std::vector<Edvs::Event> *events_;
 
     void drawSphere();
-
-    MeshInputFile mesh_input;
-    BufferPtr intensities_buffer;
+    BufferPtr vbo;
 };
 
 

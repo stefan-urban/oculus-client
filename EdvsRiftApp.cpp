@@ -12,7 +12,7 @@ void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
 
-    intensities_buffer = BufferPtr(new Buffer());
+    vbo = BufferPtr(new Buffer());
 }
 
 void EdvsRiftApp::update()
@@ -33,26 +33,8 @@ void EdvsRiftApp::drawSphere()
 {
     static ProgramPtr program = oria::loadProgram("./resources/sphere.vs", "./resources/sphere.fs");
     static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
-    //static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::Screen(), *program));
 
-    /*
-    //
-    vao = VertexArrayPtr(new VertexArray());
-    vao->Bind();
-
-    BufferPtr indexBuffer;
-    indexBuffer = BufferPtr(new Buffer());
-    indexBuffer->Bind(Buffer::Target::ElementArray);
-
-    std::vector<GLfloat> indexData(5);
-    Buffer::Data(Buffer::Target::ElementArray, indexData);
-
-    VertexArrayAttrib(oria::Layout::Attribute::Color)
-      .Pointer(3, DataType::Float, false, 5, 0)
-      .Enable();
-    */
-
-    //
+    // Reset before application exit
     Platform::addShutdownHook([]
     {
         program.reset();
@@ -61,45 +43,51 @@ void EdvsRiftApp::drawSphere()
 
 
     MatrixStack & mv = Stacks::modelview();
+
     mv.withPush([&]
     {
-        // Invert the sphere to see its insides
-        mv.scale(vec3(-1));
-
+        // Binds the program
         program->Use();
 
+        // Matrices as uniforms
         Mat4Uniform(*program, "ModelView").Set(Stacks::modelview().top());
         Mat4Uniform(*program, "Projection").Set(Stacks::projection().top());
 
-        // FoVs from binary shape file! Do not change if you do not know what you're doing!
-        //oglplus::Uniform<float>(*program, "fov_x_start").Set(0);
-        //oglplus::Uniform<float>(*program, "fov_x_end").Set(60);
-        //oglplus::Uniform<float>(*program, "fov_y_start").Set(-30);
-        //oglplus::Uniform<float>(*program, "fov_y_end").Set(30);
 
-        //oglplus::Uniform<Vector<float, 3>>(*program, "intensity_map").Set(camera_intensity);
+        // Make sure VAO is bound
+        geometry->Use();
 
-        std::vector<float> intensities(129*129);
+        // Every pixel is represented by 6 vertexes
+        std::vector<GLfloat> intensities(128*128*6-6);
 
-        intensities_buffer->Bind(Buffer::Target::Array);
+        for (size_t i = 0; i < intensities.size(); i++)
         {
-            // Upload the data
-            Buffer::Data(Buffer::Target::Array, intensities);
-
-            // setup the vertex attribs array for the intensities
-            VertexArrayAttrib(*program, "Color").Setup<GLfloat>(intensities.size()).Enable();
+            intensities[i] = 1.0;
         }
 
+        // TODO: fill image into intensities matrix
 
+        // Bind VBO
+        vbo->Bind(Buffer::Target::Array);
+        Buffer::Data(Buffer::Target::Array, intensities);
 
-        geometry->Use();
+        // Setup attribute to access buffer in shader
+        VertexArrayAttrib vbo_attr(*program, "Color");
+        vbo_attr.Setup<GLfloat>(1);
+        vbo_attr.Enable();
+
+        // Draw all elements
         geometry->Draw();
-
-        oglplus::NoProgram().Bind();
-        oglplus::NoVertexArray().Bind();
     });
 
-    //oglplus::DefaultTexture().Bind(oglplus::Texture::Target::_2D);
+    mv.withPush([&]
+    {
+    });
+
+
+    // Unbind
+    oglplus::NoProgram().Bind();
+    oglplus::NoVertexArray().Bind();
 }
 
 void EdvsRiftApp::renderScene()
@@ -122,7 +110,7 @@ void EdvsRiftApp::renderScene()
         mv.preTranslate(glm::vec3(0, 0, 0.f + trans));
 
         mv.scale(10.1f);
-        mv.rotate(-90.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
+        mv.rotate(90.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
         drawSphere();
     });
 
