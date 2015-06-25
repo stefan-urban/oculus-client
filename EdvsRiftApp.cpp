@@ -11,6 +11,8 @@ std::vector<Vector<float, 3>> camera_intensity;
 void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
+
+    intensities_buffer = BufferPtr(new Buffer());
 }
 
 void EdvsRiftApp::update()
@@ -19,7 +21,7 @@ void EdvsRiftApp::update()
 
     camera_intensity.clear();
 
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < 10; i++)
     {
         camera_intensity.push_back(Vector<float, 3>(rand() % 128, rand() % 128, 1.0));
     }
@@ -31,12 +33,32 @@ void EdvsRiftApp::drawSphere()
 {
     static ProgramPtr program = oria::loadProgram("./resources/sphere.vs", "./resources/sphere.fs");
     static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
+    //static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::Screen(), *program));
 
+    /*
+    //
+    vao = VertexArrayPtr(new VertexArray());
+    vao->Bind();
+
+    BufferPtr indexBuffer;
+    indexBuffer = BufferPtr(new Buffer());
+    indexBuffer->Bind(Buffer::Target::ElementArray);
+
+    std::vector<GLfloat> indexData(5);
+    Buffer::Data(Buffer::Target::ElementArray, indexData);
+
+    VertexArrayAttrib(oria::Layout::Attribute::Color)
+      .Pointer(3, DataType::Float, false, 5, 0)
+      .Enable();
+    */
+
+    //
     Platform::addShutdownHook([]
     {
         program.reset();
         geometry.reset();
     });
+
 
     MatrixStack & mv = Stacks::modelview();
     mv.withPush([&]
@@ -55,7 +77,20 @@ void EdvsRiftApp::drawSphere()
         //oglplus::Uniform<float>(*program, "fov_y_start").Set(-30);
         //oglplus::Uniform<float>(*program, "fov_y_end").Set(30);
 
-        oglplus::Uniform<Vector<float, 3>>(*program, "intensity_map").Set(camera_intensity);
+        //oglplus::Uniform<Vector<float, 3>>(*program, "intensity_map").Set(camera_intensity);
+
+        std::vector<float> intensities(129*129);
+
+        intensities_buffer->Bind(Buffer::Target::Array);
+        {
+            // Upload the data
+            Buffer::Data(Buffer::Target::Array, intensities);
+
+            // setup the vertex attribs array for the intensities
+            VertexArrayAttrib(*program, "Color").Setup<GLfloat>(intensities.size()).Enable();
+        }
+
+
 
         geometry->Use();
         geometry->Draw();

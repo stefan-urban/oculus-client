@@ -12,12 +12,15 @@ uniform float fov_y_start = -30.0;
 uniform float fov_y_end = 30.0;
 
 in vec3 Position;
+in float Color;
 
 out vec2 pixelCoordinates;
+out float texColor;
 
 void main()
 {
     gl_Position = Projection * ModelView * vec4(Position, 1);
+    gl_PointSize = 10.0;
 
     // Convert to spherical
     float radius = sqrt(Position.x * Position.x + Position.y * Position.y + Position.z * Position.z);
@@ -40,4 +43,5 @@ void main()
     float y = (elevation - fov_y_start) / step_ele;
 
     pixelCoordinates = vec2(x, y);
+    texColor = Color;
 }
