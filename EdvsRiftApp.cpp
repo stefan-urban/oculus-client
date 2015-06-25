@@ -6,8 +6,6 @@
 using namespace oglplus;
 
 
-std::vector<Vector<float, 3>> camera_intensity;
-
 void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
@@ -18,15 +16,6 @@ void EdvsRiftApp::initGl()
 void EdvsRiftApp::update()
 {
     RiftApp::update();
-
-    camera_intensity.clear();
-
-    for (int i = 0; i < 10; i++)
-    {
-        camera_intensity.push_back(Vector<float, 3>(rand() % 128, rand() % 128, 1.0));
-    }
-
-    camera_intensity.push_back(Vector<float, 3>(-1.0, 0.0, 0.0));
 }
 
 void EdvsRiftApp::drawSphere()
