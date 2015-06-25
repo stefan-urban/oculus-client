@@ -45,6 +45,7 @@ private:
     void drawSphere();
 
     MeshInputFile mesh_input;
+    TexturePtr loadImage();
 };
 
 

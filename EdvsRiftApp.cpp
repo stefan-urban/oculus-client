@@ -6,8 +6,6 @@
 using namespace oglplus;
 
 
-std::vector<Vector<float, 3>> camera_intensity;
-
 void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
@@ -16,29 +14,75 @@ void EdvsRiftApp::initGl()
 void EdvsRiftApp::update()
 {
     RiftApp::update();
+}
 
-    camera_intensity.clear();
+TexturePtr EdvsRiftApp::loadImage()
+{
+    // Create context
+    TexturePtr texture(new Texture());
 
-    for (int i = 0; i < 500; i++)
+    Platform::addShutdownHook([&]
     {
-        camera_intensity.push_back(Vector<float, 3>(rand() % 128, rand() % 128, 1.0));
+        texture.reset();
+    });
+
+    // Setup texture in context
+    Context::Bound(TextureTarget::_2D, *texture)
+        .MagFilter(TextureMagFilter::Nearest)
+        .MinFilter(TextureMinFilter::Nearest)
+        .Anisotropy(2.0f);
+
+
+    // Create checkerboard mat
+    int width = 64;
+    int height = 128;
+    int N = 3;
+
+    GLubyte mat[width * height * N];
+
+    for (int i = 0; i < 1; i++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                mat[y + x*height + i*(width*height)] = ((x % 2) ^ (y % 2)) * 255;
+
+                //  mat[y + x*height + i*(width*height)] = 0;
+            }
+        }
     }
 
-    camera_intensity.push_back(Vector<float, 3>(-1.0, 0.0, 0.0));
+    //mat[2] = 255;
+
+    // Bind texture
+    texture->Bind(Texture::Target::_2D);
+
+    // Assign data to texture
+    Context::Bound(TextureTarget::_2D, *texture)
+        .Image(images::Image(width, height, 1, N, mat));
+
+
+    return texture;
 }
 
 void EdvsRiftApp::drawSphere()
 {
     static ProgramPtr program = oria::loadProgram("./resources/sphere.vs", "./resources/sphere.fs");
     static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
+    TexturePtr tex = loadImage();
 
     Platform::addShutdownHook([]
     {
         program.reset();
         geometry.reset();
+        //tex.reset();
     });
 
+
+    tex->Bind(Texture::Target::_2D);
     MatrixStack & mv = Stacks::modelview();
+
     mv.withPush([&]
     {
         // Invert the sphere to see its insides
@@ -55,8 +99,6 @@ void EdvsRiftApp::drawSphere()
         //oglplus::Uniform<float>(*program, "fov_y_start").Set(-30);
         //oglplus::Uniform<float>(*program, "fov_y_end").Set(30);
 
-        oglplus::Uniform<Vector<float, 3>>(*program, "intensity_map").Set(camera_intensity);
-
         geometry->Use();
         geometry->Draw();
 
@@ -64,7 +106,7 @@ void EdvsRiftApp::drawSphere()
         oglplus::NoVertexArray().Bind();
     });
 
-    //oglplus::DefaultTexture().Bind(oglplus::Texture::Target::_2D);
+    oglplus::DefaultTexture().Bind(oglplus::Texture::Target::_2D);
 }
 
 void EdvsRiftApp::renderScene()
