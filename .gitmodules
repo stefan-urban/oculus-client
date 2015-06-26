@@ -13,3 +13,9 @@
 [submodule "vendor/oculus-server"]
 	path = vendor/oculus-server
 	url = https://github.com/stefan-urban/oculus-server.git
+[submodule "vendor/--force"]
+	path = vendor/--force
+	url = https://github.com/stefan-urban/joystick.git
+[submodule "vendor/joystick"]
+	path = vendor/joystick
+	url = https://github.com/stefan-urban/joystick.git

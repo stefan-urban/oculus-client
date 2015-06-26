@@ -7,7 +7,9 @@
 #include "EdvsImage.hpp"
 #include "EdvsRiftApp.h"
 #include "TcpClient.hpp"
+#include "JoystickEventHandler.hpp"
 #include "vendor/edvstools/Edvs/EventStream.hpp"
+#include "vendor/joystick/joystick.hh"
 
 #include "PhotoSphereExample.h"
 
@@ -90,6 +92,14 @@ void edvs_client_app(int argc, char* argv[])
 }
 
 
+int joystick_app()
+{
+    auto joystick = new Joystick("/dev/input/js0");
+    auto event_handler = JoystickEventHandler(joystick);
+
+    return event_handler.run();
+}
+
 int oculus_rift_app()
 {
     if (!ovr_Initialize())
@@ -121,17 +131,18 @@ int oculus_rift_app()
     return result;
 }
 
-
 int main(int argc, char* argv[])
 {
     std::cout << "oculus-client v1" << std::endl;
 
 
     boost::thread eca(edvs_client_app, argc, argv);
+    boost::thread jsa(joystick_app);
     boost::thread ora(oculus_rift_app);
 
 
     eca.join();
+    jsa.join();
     ora.join();
 
     return 0;
