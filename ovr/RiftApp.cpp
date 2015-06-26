@@ -23,6 +23,7 @@
 
 RiftApp::RiftApp() :  RiftGlfwApp()
 {
+
     Platform::sleepMillis(200);
     if (!ovrHmd_ConfigureTracking(hmd,
                                   ovrTrackingCap_Orientation | ovrTrackingCap_Position | ovrTrackingCap_MagYawCorrection, 0))

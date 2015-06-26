@@ -115,6 +115,7 @@ int oculus_rift_app()
     }
 
     global_stop = 1;
+
     ovr_Shutdown();
 
     return result;

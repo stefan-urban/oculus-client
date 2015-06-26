@@ -44,10 +44,6 @@
 
 #define HAVE_OPENCV 1
 
-#define OVR_OS_LINUX
-#define USE_RIFT 1
-
-
 #define __STDC_FORMAT_MACROS 1
 #define GLM_FORCE_RADIANS
 

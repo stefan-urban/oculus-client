@@ -2,6 +2,7 @@
 #include "EdvsRiftApp.h"
 
 #include <random>
+#include <glm/gtx/rotate_vector.hpp>
 
 using namespace oglplus;
 
@@ -16,6 +17,7 @@ void EdvsRiftApp::initGl()
 void EdvsRiftApp::update()
 {
     RiftApp::update();
+
 }
 
 void EdvsRiftApp::drawSphere(int camera)
@@ -91,23 +93,33 @@ void EdvsRiftApp::renderScene()
 
     mv.withPush([&]
     {
-        //mv.scale(projection_scale + 0.1f);
+        mv.rotate(elevation, glm::vec3(1.0, 0.0, 0.0));
 
-        mv.preTranslate(glm::vec3(0, 0, 0.f + trans));
+        mv.rotate(240 * DEGREES_TO_RADIANS, glm::vec3(0.0, 1.0, 0.0));
+        mv.rotate(azimuth, glm::vec3(0.0, 1.0, 0.0));
 
         mv.scale(10.1f);
-        mv.rotate(90.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
         drawSphere(3);
     });
 
     mv.withPush([&]
     {
-        //mv.scale(projection_scale + 0.1f);
+        mv.rotate(elevation, glm::vec3(1.0, 0.0, 0.0));
 
-        mv.preTranslate(glm::vec3(0, 0, 0.f + trans));
+        mv.rotate(120 * DEGREES_TO_RADIANS, glm::vec3(0.0, 1.0, 0.0));
+        mv.rotate(azimuth, glm::vec3(0.0, 1.0, 0.0));
 
         mv.scale(10.1f);
-        mv.rotate(90.0 * DEGREES_TO_RADIANS - 70.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
+        drawSphere(3);
+    });
+
+    mv.withPush([&]
+    {
+        mv.rotate(elevation, glm::vec3(1.0, 0.0, 0.0));
+
+        mv.rotate(azimuth, glm::vec3(0.0, 1.0, 0.0));
+
+        mv.scale(10.1f);
         drawSphere(4);
     });
 
@@ -120,23 +132,19 @@ void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
     {
         switch (key)
         {
-        case GLFW_KEY_O:
-            projection_scale += 1.f;
+        case GLFW_KEY_UP:
+            elevation -= 10 * DEGREES_TO_RADIANS;
+            elevation = elevation < -90 * DEGREES_TO_RADIANS ? -90 : elevation;
             return;
-        case GLFW_KEY_L:
-            projection_scale -= 1.f;
+        case GLFW_KEY_DOWN:
+            elevation += 10 * DEGREES_TO_RADIANS;
+            elevation = elevation > 90 * DEGREES_TO_RADIANS ? 90 : elevation;
             return;
-        case GLFW_KEY_I:
-            trans += 1.f;
+        case GLFW_KEY_LEFT:
+            azimuth -= 10 * DEGREES_TO_RADIANS;
             return;
-        case GLFW_KEY_K:
-            trans -= 1.f;
-            return;
-        case GLFW_KEY_U:
-            rotation += 15.f * DEGREES_TO_RADIANS;
-            return;
-        case GLFW_KEY_J:
-            rotation -= 15.f * DEGREES_TO_RADIANS;
+        case GLFW_KEY_RIGHT:
+            azimuth += 10 * DEGREES_TO_RADIANS;
             return;
         }
     }

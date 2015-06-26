@@ -21,14 +21,12 @@ struct MeshInputFile
 };
 
 
-//class EdvsRiftApp : public RiftApp
-class EdvsRiftApp : public GlfwApp
+class EdvsRiftApp : public RiftApp
 {
 public:
     EdvsRiftApp(EdvsImage (*images)[7])
         : images_(images)
     {
-
     }
 
     void initGl();
@@ -37,9 +35,8 @@ public:
     void onKey(int key, int scancode, int action, int mods);
 
 private:
-    float projection_scale = 1.0f;
-    float trans = 0.0f;
-    float rotation = 0.0f;
+    float azimuth = 0.0;
+    float elevation = 0.0;
 
     EdvsImage (*images_)[7];
 
