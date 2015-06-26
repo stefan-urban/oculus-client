@@ -21,11 +21,12 @@ struct MeshInputFile
 };
 
 
-class EdvsRiftApp : public RiftApp
+//class EdvsRiftApp : public RiftApp
+class EdvsRiftApp : public GlfwApp
 {
 public:
-    EdvsRiftApp(std::vector<Edvs::Event> *events)
-        : events_(events)
+    EdvsRiftApp(EdvsImage (*images)[7])
+        : images_(images)
     {
 
     }
@@ -40,9 +41,9 @@ private:
     float trans = 0.0f;
     float rotation = 0.0f;
 
-    std::vector<Edvs::Event> *events_;
+    EdvsImage (*images_)[7];
 
-    void drawSphere();
+    void drawSphere(int camera);
 
     MeshInputFile mesh_input;
     BufferPtr vbo;

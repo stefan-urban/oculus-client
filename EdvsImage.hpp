@@ -2,12 +2,8 @@
 #define EDVSIMAGE_H
 
 
-#include <boost/chrono.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-
-#include "EdvsEventHandler.hpp"
+#include <chrono>
 #include "vendor/edvstools/Edvs/Event.hpp"
-#include "vendor/oculus-server/EdvsEventsCollection.hpp"
 
 
 
@@ -15,16 +11,29 @@ class EdvsImage
 {
 public:
     EdvsImage();
-    void handle_event(Edvs::Event event);
-    EdvsEventsCollection *events();
+    void add_event(Edvs::Event *event);
+
+    void update();
+
+    float data(int i)
+    {
+        return image_[i];
+    }
+
+    size_t size()
+    {
+        return 128*128;
+    }
 
 private:
-    EdvsEventsCollection events_;
+    float image_[128*128];
 
+    // Decay in a microsecond timescale
+    float decay_ = 100 * 1000;
 
-    void clear_old_events();
+    //
+    std::chrono::high_resolution_clock::time_point t_lastupdate;
 
-    int decay = 0.5;
 };
 
 

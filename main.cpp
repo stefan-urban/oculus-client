@@ -5,20 +5,32 @@
 #include <boost/thread.hpp>
 
 #include "EdvsImage.hpp"
-#include "TcpClient.hpp"
-
 #include "EdvsRiftApp.h"
+#include "TcpClient.hpp"
+#include "vendor/edvstools/Edvs/EventStream.hpp"
+
 #include "PhotoSphereExample.h"
 
 
 #define DEBUG 1
 
+/**
+  * Connection type
+  */
+#define CONNECTION_TYPE_TCP 1
+#define CONNECTION_TYPE_SOCKET 2
+
+#define CONNECTION_TYPE CONNECTION_TYPE_TCP
+
+
+// Global stop bit
+int global_stop = 0;
+
 // Create io service
 boost::asio::io_service io_service;
 
-
 // Single eDVS camera images
-std::vector<Edvs::Event> events;
+EdvsImage images[7];
 
 
 void edvs_client_app(int argc, char* argv[])
@@ -29,15 +41,52 @@ void edvs_client_app(int argc, char* argv[])
         return;
     }
 
+#if CONNECTION_TYPE == CONNECTION_TYPE_TCP
     // Setup TCP connection
     boost::asio::ip::tcp::resolver resolver(io_service);
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
-    TcpClient c(io_service, endpoint_iterator, &events);
+    //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
+
+    TcpClient c(io_service, endpoint_iterator, &images);
 
     // Start client
     io_service.run();
 
     c.close();
+
+#elif CONNECTION_TYPE == CONNECTION_TYPE_SOCKET
+
+    const std::vector<std::string> uris = {
+        "192.168.0.133:7004",
+        "192.168.0.133:7005"
+    };
+    auto stream = Edvs::OpenEventStream(uris);
+
+    if (stream->is_live() && stream->is_open())
+    {
+        std::cout << "info: stream open" << std::endl;
+    }
+    else
+    {
+        std::cout << "error: stream NOT open" << std::endl;
+    }
+
+    while(global_stop == 0)
+    {
+        auto events = stream->read();
+
+        for(Edvs::Event& e : events)
+        {
+            images[e.id].add_event(&e);
+        }
+
+        // Sleep for 10 ms
+        usleep(20 * 1000);
+    }
+
+#else
+    #error You must at least specify one way to transmit data.
+#endif
 }
 
 
@@ -53,7 +102,7 @@ int oculus_rift_app()
 
     try
     {
-        EdvsRiftApp rift_app(&events);
+        EdvsRiftApp rift_app(&images);
         result = rift_app.run();
     }
     catch (std::exception & error)
@@ -65,6 +114,7 @@ int oculus_rift_app()
         SAY_ERR(error.c_str());
     }
 
+    global_stop = 1;
     ovr_Shutdown();
 
     return result;

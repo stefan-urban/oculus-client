@@ -1,35 +1,70 @@
 #include "EdvsImage.hpp"
 
+#include <glm/vec2.hpp>
+#include <cmath>
+
+
+static glm::vec2 id2corrds(int id)
+{
+    return glm::vec2(
+        id % 128,
+        id / 128
+    );
+}
+
+static int coords2id(int x, int y)
+{
+    return x + y * 128;
+}
+
+static int coords2id(glm::vec2 coords)
+{
+    return coords2id(coords.x, coords.y);
+}
+
 
 EdvsImage::EdvsImage()
 {
-    for (int i = 0; i < 128; i += 2)
+    t_lastupdate = std::chrono::high_resolution_clock::now();
+
+    for (size_t i = 0; i < 128; i++)
     {
-        for (int j = 0; j < 128; j += 2)
+        for (size_t j = 0; j < 128; j++)
         {
-            Edvs::Event event;
-
-            event.x = i;
-            event.y = j;
-            event.parity = 0;
-            event.t = 0;
-
-            events_.push_back(event);
+            image_[j + i * 128] = (float) ((i % 2) ^ (j % 2));
         }
     }
 }
 
-void EdvsImage::handle_event(Edvs::Event event)
+static int count = 0;
+
+void EdvsImage::add_event(Edvs::Event *event)
 {
-    //events_.push_back(event);
+    count++;
+
+    int pixel_id = coords2id(event->y, 128 - event->x);
+
+    image_[pixel_id] = event->parity ? 1.0 : -1.0;
+
+    // TODO: time has to have an effect on start value
 }
 
-EdvsEventsCollection *EdvsImage::events()
+void EdvsImage::update()
 {
-    return &events_;
+    // Calculate transformation
+    std::chrono::high_resolution_clock::time_point t_end = std::chrono::high_resolution_clock::now() ;
+    std::chrono::duration<int,std::micro> duration( std::chrono::duration_cast<std::chrono::duration<int,std::micro>>(t_end - t_lastupdate) ) ;
+
+    // Factor is depending only on time
+    float factor = exp(-1 * (float) duration.count() / decay_);
+
+    // Apply factor on every single pixel
+    for (int i = 0; i < 128*128; i++)
+    {
+        image_[i] *= factor;
+    }
+
+    // Reset timer
+    t_lastupdate = std::chrono::high_resolution_clock::now();
 }
 
-void EdvsImage::clear_old_events()
-{
-    events_.clear();
-}

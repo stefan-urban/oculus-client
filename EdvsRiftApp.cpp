@@ -18,7 +18,7 @@ void EdvsRiftApp::update()
     RiftApp::update();
 }
 
-void EdvsRiftApp::drawSphere()
+void EdvsRiftApp::drawSphere(int camera)
 {
     static ProgramPtr program = oria::loadProgram("./resources/sphere.vs", "./resources/sphere.fs");
     static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
@@ -46,15 +46,17 @@ void EdvsRiftApp::drawSphere()
         // Make sure VAO is bound
         geometry->Use();
 
+
+        // TODO: fill image into intensities matrix
+        (*images_)[camera].update();
+
         // Every pixel is represented by 6 vertexes
-        std::vector<GLfloat> intensities(128*128*6-6);
+        std::vector<GLfloat> intensities((*images_)[camera].size() * 6);
 
         for (size_t i = 0; i < intensities.size(); i++)
         {
-            intensities[i] = 1.0;
+            intensities[i] = (*images_)[camera].data(i / 6);
         }
-
-        // TODO: fill image into intensities matrix
 
         // Bind VBO
         vbo->Bind(Buffer::Target::Array);
@@ -68,11 +70,6 @@ void EdvsRiftApp::drawSphere()
         // Draw all elements
         geometry->Draw();
     });
-
-    mv.withPush([&]
-    {
-    });
-
 
     // Unbind
     oglplus::NoProgram().Bind();
@@ -100,7 +97,18 @@ void EdvsRiftApp::renderScene()
 
         mv.scale(10.1f);
         mv.rotate(90.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
-        drawSphere();
+        drawSphere(3);
+    });
+
+    mv.withPush([&]
+    {
+        //mv.scale(projection_scale + 0.1f);
+
+        mv.preTranslate(glm::vec3(0, 0, 0.f + trans));
+
+        mv.scale(10.1f);
+        mv.rotate(90.0 * DEGREES_TO_RADIANS - 70.0 * DEGREES_TO_RADIANS + rotation, glm::vec3(0.0, 1.0, 0.0));
+        drawSphere(4);
     });
 
     Context::Enable(Capability::CullFace);

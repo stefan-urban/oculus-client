@@ -67,7 +67,7 @@ void TcpClient::do_read_body()
 
             for(Edvs::Event& e : msg_events.events())
             {
-                events_->push_back(e);
+                (*images_)[e.id].add_event(&e);
             }
 
             do_read_header();
