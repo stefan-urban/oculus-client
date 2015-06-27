@@ -16,3 +16,6 @@
 [submodule "vendor/dispatcher"]
 	path = vendor/dispatcher
 	url = https://github.com/stefan-urban/dispatcher.git
+[submodule "vendor/oculus-server"]
+	path = vendor/oculus-server
+	url = https://github.com/stefan-urban/oculus-server.git
