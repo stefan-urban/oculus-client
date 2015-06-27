@@ -37,9 +37,10 @@ int JoystickEventHandler::run()
         }
 
         // Attempt to sample an event from the joystick
-        JoystickEvent event;
+        std::vector<JoystickEvent> events;
+        joystick_->samples(&events);
 
-        if (joystick_->sample(&event))
+        for(JoystickEvent event : events)
         {
             if (event.isButton())
             {
