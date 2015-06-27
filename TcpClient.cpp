@@ -2,7 +2,9 @@
 #include "TcpClient.hpp"
 #include "vendor/oculus-server/TcpMessage.hpp"
 #include "vendor/oculus-server/Message_EventCollection.hpp"
+#include "vendor/dispatcher/Dispatcher.hpp"
 
+#include <string>
 
 void TcpClient::deliver(TcpMessage& msg)
 {
@@ -64,14 +66,21 @@ void TcpClient::do_read_body()
         {
             std::string const data = std::string(read_msg_.body());
 
-            Message_EventCollection msg_events;
-            msg_events.unserialize(&data);
+            // Determine type
+            size_t pos = data.find('|');
 
-            for(Edvs::Event& e : msg_events.events())
+            if (pos == std::string::npos || pos < 2)
             {
-                (*images_)[e.id].add_event(&e);
+                return;
             }
 
+            std::string type = data.substr(0, pos - 1);
+
+            // Pack new event and dispatch it
+            auto e = DispatcherEvent(type, data.substr(pos + 1));
+            dispatcher_->dispatch(e);
+
+            // And restart with waiting for the next header
             do_read_header();
         }
         else

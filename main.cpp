@@ -4,12 +4,13 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
-#include "EdvsImage.hpp"
+#include "EdvsImageHandler.hpp"
 #include "EdvsRiftApp.h"
 #include "TcpClient.hpp"
 #include "JoystickEventHandler.hpp"
 #include "vendor/edvstools/Edvs/EventStream.hpp"
 #include "vendor/joystick/joystick.hh"
+#include "vendor/dispatcher/Dispatcher.hpp"
 
 #include "PhotoSphereExample.h"
 
@@ -54,7 +55,7 @@ int joystick_app(TcpClient *tcp_client)
     return 0;
 }
 
-int oculus_rift_app(EdvsImage (*images)[7])
+int oculus_rift_app(EdvsImageHandler *image_handler)
 {
     if (!ovr_Initialize())
     {
@@ -66,7 +67,7 @@ int oculus_rift_app(EdvsImage (*images)[7])
 
     try
     {
-        EdvsRiftApp rift_app(images);
+        EdvsRiftApp rift_app(image_handler);
         result = rift_app.run();
     }
     catch (std::exception & error)
@@ -93,18 +94,27 @@ int main(int argc, char* argv[])
     boost::asio::io_service io_service;
 
     // Single eDVS camera images
-    EdvsImage images[7];
+    EdvsImageHandler image_handler;
+
+
+    // Setup dispatcher
+    auto dispatcher = new Dispatcher();
+
+    dispatcher->addListener(&image_handler);
+
+
 
     // TCP client connection
     boost::asio::ip::tcp::resolver resolver(io_service);
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
     //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
 
-    TcpClient tcp_client(io_service, endpoint_iterator, &images);
+    TcpClient tcp_client(io_service, endpoint_iterator, dispatcher);
 
 
     boost::thread jsa(joystick_app, &tcp_client);
-    boost::thread ora(oculus_rift_app, &images);
+    boost::thread ora(oculus_rift_app, &image_handler);
+
 
     // Start client
     io_service.run();

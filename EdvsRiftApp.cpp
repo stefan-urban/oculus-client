@@ -50,14 +50,14 @@ void EdvsRiftApp::drawSphere(int camera)
 
 
         // TODO: fill image into intensities matrix
-        (*images_)[camera].update();
+        images_[camera]->update();
 
         // Every pixel is represented by 6 vertexes
-        std::vector<GLfloat> intensities((*images_)[camera].size() * 6);
+        std::vector<GLfloat> intensities(images_[camera]->size() * 6);
 
         for (size_t i = 0; i < intensities.size(); i++)
         {
-            intensities[i] = (*images_)[camera].data(i / 6);
+            intensities[i] = images_[camera]->data(i / 6);
         }
 
         // Bind VBO

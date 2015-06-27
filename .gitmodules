@@ -10,12 +10,9 @@
 [submodule "vendor/oglplus"]
 	path = vendor/oglplus
 	url = https://github.com/matus-chochlik/oglplus.git
-[submodule "vendor/oculus-server"]
-	path = vendor/oculus-server
-	url = https://github.com/stefan-urban/oculus-server.git
-[submodule "vendor/--force"]
-	path = vendor/--force
-	url = https://github.com/stefan-urban/joystick.git
 [submodule "vendor/joystick"]
 	path = vendor/joystick
 	url = https://github.com/stefan-urban/joystick.git
+[submodule "vendor/dispatcher"]
+	path = vendor/dispatcher
+	url = https://github.com/stefan-urban/dispatcher.git

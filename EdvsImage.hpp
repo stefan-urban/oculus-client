@@ -4,7 +4,7 @@
 
 #include <chrono>
 #include "vendor/edvstools/Edvs/Event.hpp"
-
+#include "vendor/dispatcher/Dispatcher.hpp"
 
 
 class EdvsImage
@@ -12,6 +12,7 @@ class EdvsImage
 public:
     EdvsImage();
     void add_event(Edvs::Event *event);
+    void event(DispatcherEvent event);
 
     void update();
 
@@ -26,6 +27,7 @@ public:
     }
 
 private:
+    int id_;
     float image_[128*128];
 
     // Decay in a microsecond timescale

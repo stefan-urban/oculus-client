@@ -3,6 +3,8 @@
 #include <glm/vec2.hpp>
 #include <cmath>
 
+#include "vendor/oculus-server/Message_EventCollection.hpp"
+
 
 static glm::vec2 id2corrds(int id)
 {
@@ -23,7 +25,10 @@ static int coords2id(glm::vec2 coords)
 }
 
 
+static int next_id = 0;
+
 EdvsImage::EdvsImage()
+    : id_(next_id++)
 {
     t_lastupdate = std::chrono::high_resolution_clock::now();
 

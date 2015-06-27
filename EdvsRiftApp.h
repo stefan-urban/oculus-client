@@ -2,7 +2,7 @@
 #define EDVSRIFTAPP_H
 
 #include "Common.h"
-#include "EdvsImage.hpp"
+#include "EdvsImageHandler.hpp"
 
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,9 +24,12 @@ struct MeshInputFile
 class EdvsRiftApp : public RiftApp
 {
 public:
-    EdvsRiftApp(EdvsImage (*images)[7])
-        : images_(images)
+    EdvsRiftApp(EdvsImageHandler *image_handler)
     {
+        for (size_t i = 0; i < 7; i++)
+        {
+            images_[i] = &(image_handler->images()[i]);
+        }
     }
 
     void initGl();
@@ -38,7 +41,7 @@ private:
     float azimuth = 0.0;
     float elevation = 0.0;
 
-    EdvsImage (*images_)[7];
+    EdvsImage* images_[7];
 
     void drawSphere(int camera);
 

@@ -52,7 +52,9 @@ SOURCES += \
     Common.cpp \
     JoystickEventHandler.cpp \
     vendor/joystick/joystick.cc \
-    vendor/oculus-server/Message_JoystickState.cpp
+    vendor/oculus-server/Message_JoystickState.cpp \
+    EdvsImageHandler.cpp \
+    vendor/dispatcher/Dispatcher.cpp
 
 HEADERS += \
     TcpClient.hpp \
@@ -98,7 +100,9 @@ HEADERS += \
     opengl/Errors.hpp \
     JoystickEventHandler.hpp \
     vendor/joystick/joystick.hh \
-    vendor/oculus-server/Message_JoystickState.hpp
+    vendor/oculus-server/Message_JoystickState.hpp \
+    EdvsImageHandler.hpp \
+    vendor/dispatcher/Dispatcher.hpp
 
 DISTFILES += \
     resources/sphere.fs \
