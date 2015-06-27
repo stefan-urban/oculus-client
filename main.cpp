@@ -14,93 +14,47 @@
 #include "PhotoSphereExample.h"
 
 
-#define DEBUG 1
-
-/**
-  * Connection type
-  */
-#define CONNECTION_TYPE_TCP 1
-#define CONNECTION_TYPE_SOCKET 2
-
-#define CONNECTION_TYPE CONNECTION_TYPE_TCP
-
-
 // Global stop bit
 int global_stop = 0;
 
-// Create io service
-boost::asio::io_service io_service;
-
-// Single eDVS camera images
-EdvsImage images[7];
-
-
-void edvs_client_app(int argc, char* argv[])
-{
-    if (argc != 3)
-    {
-        std::cout << "TCP connection failed!" << std::endl;
-        return;
-    }
-
-#if CONNECTION_TYPE == CONNECTION_TYPE_TCP
-    // Setup TCP connection
-    boost::asio::ip::tcp::resolver resolver(io_service);
-    auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
-    //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
-
-    TcpClient c(io_service, endpoint_iterator, &images);
-
-    // Start client
-    io_service.run();
-
-    c.close();
-
-#elif CONNECTION_TYPE == CONNECTION_TYPE_SOCKET
-
-    const std::vector<std::string> uris = {
-        "192.168.0.133:7004",
-        "192.168.0.133:7005"
-    };
-    auto stream = Edvs::OpenEventStream(uris);
-
-    if (stream->is_live() && stream->is_open())
-    {
-        std::cout << "info: stream open" << std::endl;
-    }
-    else
-    {
-        std::cout << "error: stream NOT open" << std::endl;
-    }
-
-    while(global_stop == 0)
-    {
-        auto events = stream->read();
-
-        for(Edvs::Event& e : events)
-        {
-            images[e.id].add_event(&e);
-        }
-
-        // Sleep for 10 ms
-        usleep(20 * 1000);
-    }
-
-#else
-    #error You must at least specify one way to transmit data.
-#endif
-}
-
-
-int joystick_app()
+int joystick_app(TcpClient *tcp_client)
 {
     auto joystick = new Joystick("/dev/input/js0");
     auto event_handler = JoystickEventHandler(joystick);
 
-    return event_handler.run();
+    while (global_stop == 0)
+    {
+        while (!joystick->isFound())
+        {
+            Platform::sleepMillis(500);
+            joystick->reconnect();
+
+            if (global_stop)
+            {
+                return 0;
+            }
+        }
+
+        event_handler.handle_events();
+
+        // Transmit changes
+        auto msg = Message_JoystickState(event_handler.button_states(), event_handler.axis_states());
+
+        std::string test = msg.serialize();
+
+        TcpMessage tcpMsg;
+        tcpMsg.message(&msg);
+
+        tcp_client->deliver(tcpMsg);
+
+
+        Platform::sleepMillis(100);
+    }
+
+    return 0;
 }
 
-int oculus_rift_app()
+int oculus_rift_app(EdvsImage (*images)[7])
 {
     if (!ovr_Initialize())
     {
@@ -112,7 +66,7 @@ int oculus_rift_app()
 
     try
     {
-        EdvsRiftApp rift_app(&images);
+        EdvsRiftApp rift_app(images);
         result = rift_app.run();
     }
     catch (std::exception & error)
@@ -135,13 +89,29 @@ int main(int argc, char* argv[])
 {
     std::cout << "oculus-client v1" << std::endl;
 
+    // Create io service
+    boost::asio::io_service io_service;
 
-    boost::thread eca(edvs_client_app, argc, argv);
-    boost::thread jsa(joystick_app);
-    boost::thread ora(oculus_rift_app);
+    // Single eDVS camera images
+    EdvsImage images[7];
+
+    // TCP client connection
+    boost::asio::ip::tcp::resolver resolver(io_service);
+    auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
+    //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
+
+    TcpClient tcp_client(io_service, endpoint_iterator, &images);
 
 
-    eca.join();
+    boost::thread jsa(joystick_app, &tcp_client);
+    boost::thread ora(oculus_rift_app, &images);
+
+    // Start client
+    io_service.run();
+
+    tcp_client.close();
+
+
     jsa.join();
     ora.join();
 

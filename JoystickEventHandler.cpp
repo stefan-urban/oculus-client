@@ -1,71 +1,32 @@
 #include "JoystickEventHandler.hpp"
 
-extern int global_stop;
 
-int JoystickEventHandler::run()
+int JoystickEventHandler::handle_events()
 {
-    if (!joystick_->isFound())
+    // Attempt to sample an event from the joystick
+    std::vector<JoystickEvent> events;
+    joystick_->samples(&events);
+
+    for(JoystickEvent event : events)
     {
-        Platform::sleepMillis(500);
-
-        joystick_->reconnect();
-        run();
-    }
-
-    std::cout << "Joystick found" << std::endl;
-
-    // Grab basic information
-    number_of_buttons_ = joystick_->numberOfButtons();
-    button_states_.resize(number_of_buttons_);
-
-    number_of_axis_ = joystick_->numberOfAxis();
-    axis_states_.resize(number_of_axis_);
-
-    while (global_stop == 0)
-    {
-        // Always check if joystick is still connected
-        if (!joystick_->isFound())
+        if (event.isButton())
         {
-            std::cout << "Joystick detached" << std::endl;
-
-            // Reset states
-            std::fill(button_states_.begin(), button_states_.end(), false);
-            std::fill(axis_states_.begin(), axis_states_.end(), 0);
-
-            // Restart
-            run();
-        }
-
-        // Attempt to sample an event from the joystick
-        std::vector<JoystickEvent> events;
-        joystick_->samples(&events);
-
-        for(JoystickEvent event : events)
-        {
-            if (event.isButton())
+            if (event.value == 0)
             {
-                if (event.value == 0)
-                {
-                    button_released((int) event.number);
-                }
-                else
-                {
-                    button_pressed((int) event.number);
-                }
+                button_released((int) event.number);
             }
-            else if (event.isAxis())
+            else
             {
-                axis_update((int) event.number, (int) event.value);
+                button_pressed((int) event.number);
             }
         }
-
-        // Transmit changes
-        //...
-
-        Platform::sleepMillis(50);
+        else if (event.isAxis())
+        {
+            axis_update((int) event.number, (int) event.value);
+        }
     }
 
-    return 0;
+    return 1;
 }
 
 void JoystickEventHandler::button_pressed(int id)
@@ -81,4 +42,13 @@ void JoystickEventHandler::button_released(int id)
 void JoystickEventHandler::axis_update(int id, int new_value)
 {
     axis_states_[id] = new_value;
+}
+
+void JoystickEventHandler::setup_state_vector_sizes()
+{
+    number_of_buttons_ = joystick_->numberOfButtons();
+    button_states_.resize(number_of_buttons_);
+
+    number_of_axis_ = joystick_->numberOfAxis();
+    axis_states_.resize(number_of_axis_);
 }

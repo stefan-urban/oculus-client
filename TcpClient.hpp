@@ -39,7 +39,7 @@ public:
         do_connect(endpoint_iterator);
     }
 
-  void write(const TcpMessage& msg);
+  void deliver(TcpMessage& msg);
   void close();
 
 private:

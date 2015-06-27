@@ -4,8 +4,10 @@
 #include "vendor/oculus-server/Message_EventCollection.hpp"
 
 
-void TcpClient::write(const TcpMessage& msg)
+void TcpClient::deliver(TcpMessage& msg)
 {
+    msg.encode();
+
   io_service_.post(
       [this, msg]()
       {

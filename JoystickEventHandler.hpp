@@ -2,6 +2,8 @@
 #define JOYSTICKEVENTHANDLER_HPP
 
 #include "Common.h"
+#include "vendor/oculus-server/TcpMessage.hpp"
+#include "vendor/oculus-server/Message_JoystickState.hpp"
 #include "vendor/joystick/joystick.hh"
 
 class JoystickEventHandler
@@ -10,14 +12,27 @@ public:
     JoystickEventHandler()
     {
         joystick_ = new Joystick;
+        setup_state_vector_sizes();
     }
 
     JoystickEventHandler(Joystick *joystick)
         : joystick_(joystick)
     {
+        setup_state_vector_sizes();
     }
 
-    int run();
+    int handle_events();
+
+    std::vector<bool> button_states()
+    {
+        return button_states_;
+    }
+
+    std::vector<int> axis_states()
+    {
+        return axis_states_;
+    }
+
 
 private:
     Joystick *joystick_;
@@ -27,6 +42,7 @@ private:
 
     std::vector<bool> button_states_;
     std::vector<int> axis_states_;
+    void setup_state_vector_sizes();
 
     void button_pressed(int id);
     void button_released(int id);
