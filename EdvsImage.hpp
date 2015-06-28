@@ -16,6 +16,11 @@ public:
 
     void update();
 
+    float *data()
+    {
+        return image_;
+    }
+
     float data(int i)
     {
         return image_[i];
