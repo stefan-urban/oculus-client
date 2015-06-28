@@ -1,9 +1,11 @@
 
 #include <iostream>
 #include <string>
+#include <cmath>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
+#include "Common.h"
 #include "EdvsImageHandler.hpp"
 #include "EdvsRiftApp.h"
 #include "TcpClient.hpp"
@@ -11,6 +13,7 @@
 #include "vendor/edvstools/Edvs/EventStream.hpp"
 #include "vendor/joystick/joystick.hh"
 #include "vendor/dispatcher/Dispatcher.hpp"
+#include "vendor/oculus-server/Message_RobotCommand.hpp"
 
 #include "PhotoSphereExample.h"
 
@@ -38,10 +41,42 @@ int joystick_app(TcpClient *tcp_client)
 
         event_handler.handle_events();
 
-        // Transmit changes
-        auto msg = Message_JoystickState(event_handler.button_states(), event_handler.axis_states());
+        // Calculate direction (x-y-system, y is looking forward)
+        int axis_x = event_handler.axis(0);
+        int axis_y = event_handler.axis(1);
 
-        std::string test = msg.serialize();
+        // Normalize vectors to -1 to +1
+        float max_val = 26000.0;
+
+        float direction_x = -1.0 * ((float) axis_x) / max_val;
+        float direction_y = -1.0 * ((float) axis_y) / max_val;
+
+        // Limit to absolute value of one
+        direction_x = direction_x > 1.0f ? 1.0f : direction_x;
+        direction_x = direction_x < -1.f ? -1.f : direction_x;
+        direction_y = direction_y > 1.0f ? 1.0f : direction_y;
+        direction_y = direction_y < -1.f ? -1.f : direction_y;
+
+        // Direction is the angle offset from "forward"
+        float direction = std::atan2(direction_x, direction_y);
+
+        if (direction < 0.0)
+        {
+            direction = TWO_PI + direction;
+        }
+
+        // Speed is simply the length of the vector, normalized to -1 to 1
+        float speed = sqrt(0.5 * (direction_x * direction_x + direction_y * direction_y));
+
+        // Correction, so that the controller allows speed 1.0 in every direction
+        float tmp = (std::sqrt(2.0) - 1.0) / 2.0;
+        float fac = std::cos(4*direction) * tmp + 1.0 + tmp;
+        speed *= fac;
+
+        std::cout << "speed: " << speed << std::endl;
+
+        // Transmit changes
+        auto msg = Message_RobotCommand(direction, speed);
 
         TcpMessage tcpMsg;
         tcpMsg.message(&msg);
@@ -100,7 +135,7 @@ int main(int argc, char* argv[])
     // Setup dispatcher
     auto dispatcher = new Dispatcher();
 
-    dispatcher->addListener(&image_handler);
+    dispatcher->addListener(&image_handler, std::string("events"));
 
 
 
