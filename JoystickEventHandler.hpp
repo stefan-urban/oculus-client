@@ -28,9 +28,19 @@ public:
         return button_states_;
     }
 
+    bool button(std::size_t id)
+    {
+        return button_states_.at(id);
+    }
+
     std::vector<int> axis_states()
     {
         return axis_states_;
+    }
+
+    int axis(std::size_t id)
+    {
+        return axis_states_.at(id);
     }
 
 
