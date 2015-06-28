@@ -21,6 +21,9 @@
 // Global stop bit
 int global_stop = 0;
 
+boost::asio::io_service io_service;
+
+
 int joystick_app(TcpClient *tcp_client)
 {
     auto joystick = new Joystick("/dev/input/js0");
@@ -114,6 +117,7 @@ int oculus_rift_app(EdvsImageHandler *image_handler)
     }
 
     global_stop = 1;
+    io_service.stop();
 
     ovr_Shutdown();
 
@@ -123,9 +127,6 @@ int oculus_rift_app(EdvsImageHandler *image_handler)
 int main(int argc, char* argv[])
 {
     std::cout << "oculus-client v1" << std::endl;
-
-    // Create io service
-    boost::asio::io_service io_service;
 
     // Single eDVS camera images
     EdvsImageHandler image_handler;
