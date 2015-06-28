@@ -73,7 +73,6 @@ int joystick_app(TcpClient *tcp_client)
         float fac = std::cos(4*direction) * tmp + 1.0 + tmp;
         speed *= fac;
 
-        std::cout << "speed: " << speed << std::endl;
 
         // Transmit changes
         auto msg = Message_RobotCommand(direction, speed);
