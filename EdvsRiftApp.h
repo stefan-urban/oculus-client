@@ -25,11 +25,8 @@ class EdvsRiftApp : public RiftApp
 {
 public:
     EdvsRiftApp(EdvsImageHandler *image_handler)
+        : image_handler_(image_handler)
     {
-        for (size_t i = 0; i < 7; i++)
-        {
-            images_[i] = &(image_handler->images()[i]);
-        }
     }
 
     void initGl();
@@ -41,12 +38,17 @@ private:
     float azimuth = 0.0;
     float elevation = 0.0;
 
-    EdvsImage* images_[7];
-
-    void drawSphere(int camera);
+    void drawEvents(int camera);
+    void drawSphereBackground(int camera);
 
     MeshInputFile mesh_input;
-    BufferPtr vbo;
+
+    EdvsImageHandler *image_handler_;
+
+    VertexArrayPtr vao;
+    BufferPtr vbo_position;
+    BufferPtr vbo_color;
+    BufferPtr indices;
 };
 
 

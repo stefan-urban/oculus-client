@@ -74,7 +74,7 @@ void TcpClient::do_read_body()
                 return;
             }
 
-            std::string type = data.substr(0, pos - 1);
+            std::string type = data.substr(0, pos);
 
             // Pack new event and dispatch it
             auto e = DispatcherEvent(type, data.substr(pos + 1));

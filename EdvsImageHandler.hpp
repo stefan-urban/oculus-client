@@ -1,21 +1,24 @@
 #ifndef EDVSIMAGEHANDLER_HPP
 #define EDVSIMAGEHANDLER_HPP
 
+#include <cstddef>
+
+#include "EdvsCamera.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
-#include "EdvsImage.hpp"
+
 
 class EdvsImageHandler : public DispatcherListener
 {
 public:
-    EdvsImage *images()
+    EdvsCamera *camera(size_t id)
     {
-        return images_;
+        return &(cameras_[id]);
     }
 
     void event(DispatcherEvent event);
 
 private:
-    EdvsImage images_[7];
+    EdvsCamera cameras_[7];
 };
 
 #endif // EDVSIMAGEHANDLER_HPP

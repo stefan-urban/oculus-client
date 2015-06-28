@@ -19,7 +19,6 @@
 #include <thread>
 #include <boost/asio.hpp>
 
-#include "EdvsImage.hpp"
 #include "vendor/oculus-server/TcpMessage.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
 
