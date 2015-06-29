@@ -7,6 +7,8 @@
 using namespace oglplus;
 
 
+static EdvsCamera camera[7];
+
 void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
@@ -20,6 +22,10 @@ void EdvsRiftApp::initGl()
 void EdvsRiftApp::update()
 {
     RiftApp::update();
+
+    //mutex_->lock();
+    camera[0] = *(image_handler_->camera(0));
+    //mutex_->unlock();
 }
 
 void EdvsRiftApp::drawEvents(int camera_id)
@@ -53,7 +59,7 @@ void EdvsRiftApp::drawEvents(int camera_id)
         // Bind VBO "Positions"
         vbo_position->Bind(Buffer::Target::Array);
         {
-            Buffer::Data(Buffer::Target::Array, image_handler_->camera(camera_id)->positions(), BufferUsage::StreamDraw);
+            Buffer::Data(Buffer::Target::Array, camera[camera_id].positions(), BufferUsage::StreamDraw);
 
             VertexArrayAttrib vao_attr(*program, "Position");
             vao_attr.Setup<Vec2f>();
@@ -63,15 +69,16 @@ void EdvsRiftApp::drawEvents(int camera_id)
         // Bind VBO "Color"
         vbo_color->Bind(Buffer::Target::Array);
         {
-            Buffer::Data(Buffer::Target::Array, image_handler_->camera(camera_id)->intensities(), BufferUsage::StreamDraw);
+            Buffer::Data(Buffer::Target::Array, camera[camera_id].intensities(), BufferUsage::StreamDraw);
 
             VertexArrayAttrib vao_attr(*program, "Color");
             vao_attr.Setup<Vec1f>();
             vao_attr.Enable();
         }
 
+
         // Draw all elements
-        Context::DrawArrays(PrimitiveType::Points, 0, image_handler_->camera(camera_id)->size());
+        Context::DrawArrays(PrimitiveType::Points, 0, camera[camera_id].size());
     });
 
     // Unbind
@@ -79,7 +86,7 @@ void EdvsRiftApp::drawEvents(int camera_id)
     oglplus::NoVertexArray().Bind();
 }
 
-void EdvsRiftApp::drawSphereBackground(int camera)
+void EdvsRiftApp::drawSphereBackground(int camera_id)
 {
     static ProgramPtr program = oria::loadProgram("./resources/sphere_background.vs", "./resources/sphere_background.fs");
     static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));

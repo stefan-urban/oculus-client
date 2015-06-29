@@ -13,8 +13,10 @@ LIBS += -lOpenCTM -L/usr/local/lib/
 
 
 install_it.path = $$OUT_PWD/resources/
-install_it.files += resources/sphere.fs
-install_it.files += resources/sphere.vs
+install_it.files += resources/event_pixel.fs
+install_it.files += resources/event_pixel.vs
+install_it.files += resources/sphere_background.fs
+install_it.files += resources/sphere_background.vs
 install_it.files += resources/spherical_calotte.obj
 
 INSTALLS += \
@@ -23,7 +25,6 @@ INSTALLS += \
 SOURCES += \
     main.cpp \
     TcpClient.cpp \
-    EdvsImage.cpp \
     vendor/edvstools/Edvs/EventIO.cpp \
     vendor/edvstools/Edvs/EventStream.cpp \
     vendor/edvstools/Edvs/edvs.c \
@@ -55,11 +56,11 @@ SOURCES += \
     vendor/oculus-server/Message_JoystickState.cpp \
     EdvsImageHandler.cpp \
     vendor/dispatcher/Dispatcher.cpp \
-    vendor/oculus-server/Message_RobotCommand.cpp
+    vendor/oculus-server/Message_RobotCommand.cpp \
+    EdvsCamera.cpp
 
 HEADERS += \
     TcpClient.hpp \
-    EdvsImage.hpp \
     vendor/edvstools/Edvs/edvs.h \
     vendor/edvstools/Edvs/edvs_impl.h \
     vendor/edvstools/Edvs/event.h \
@@ -104,8 +105,11 @@ HEADERS += \
     vendor/oculus-server/Message_JoystickState.hpp \
     EdvsImageHandler.hpp \
     vendor/dispatcher/Dispatcher.hpp \
-    vendor/oculus-server/Message_RobotCommand.hpp
+    vendor/oculus-server/Message_RobotCommand.hpp \
+    EdvsCamera.hpp
 
 DISTFILES += \
-    resources/sphere.fs \
-    resources/sphere.vs
+    resources/sphere_background.fs \
+    resources/sphere_background.vs \
+    resources/event_pixel.fs \
+    resources/event_pixel.vs

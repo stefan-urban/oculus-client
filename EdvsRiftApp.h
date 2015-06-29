@@ -5,6 +5,7 @@
 #include "EdvsImageHandler.hpp"
 
 #include <chrono>
+#include <boost/thread.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <oglplus/shapes/obj_mesh.hpp>
 #include <oglplus/opt/resources.hpp>
@@ -24,7 +25,7 @@ struct MeshInputFile
 class EdvsRiftApp : public RiftApp
 {
 public:
-    EdvsRiftApp(EdvsImageHandler *image_handler)
+    EdvsRiftApp(EdvsImageHandler *image_handler, boost::mutex *mutex)
         : image_handler_(image_handler)
     {
     }
@@ -49,6 +50,8 @@ private:
     BufferPtr vbo_position;
     BufferPtr vbo_color;
     BufferPtr indices;
+
+    boost::mutex *mutex_;
 };
 
 

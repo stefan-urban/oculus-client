@@ -22,7 +22,21 @@
 int global_stop = 0;
 
 boost::asio::io_service io_service;
+boost::mutex mutex;
 
+int edvs_images_app(EdvsImageHandler *image_handler)
+{
+    while (global_stop == 0)
+    {
+        mutex.lock();
+        image_handler->camera(0)->clear();
+        mutex.unlock();
+
+        Platform::sleepMillis(200);
+    }
+
+    return 0;
+}
 
 int joystick_app(TcpClient *tcp_client)
 {
@@ -104,7 +118,7 @@ int oculus_rift_app(EdvsImageHandler *image_handler)
 
     try
     {
-        EdvsRiftApp rift_app(image_handler);
+        EdvsRiftApp rift_app(image_handler, &mutex);
         result = rift_app.run();
     }
     catch (std::exception & error)
@@ -129,7 +143,7 @@ int main(int argc, char* argv[])
     std::cout << "oculus-client v1" << std::endl;
 
     // Single eDVS camera images
-    EdvsImageHandler image_handler;
+    auto image_handler = EdvsImageHandler(&mutex);
 
 
     // Setup dispatcher
@@ -149,6 +163,7 @@ int main(int argc, char* argv[])
 
     boost::thread jsa(joystick_app, &tcp_client);
     boost::thread ora(oculus_rift_app, &image_handler);
+    boost::thread eia(edvs_images_app, &image_handler);
 
 
     // Start client
@@ -159,6 +174,7 @@ int main(int argc, char* argv[])
 
     jsa.join();
     ora.join();
+    eia.join();
 
     return 0;
 }

@@ -32,7 +32,7 @@ void EdvsCamera::add(float parity, std::pair<int, int> position, unsigned long l
     parity_.push_back((GLfloat) parity);
     time_.push_back(time);
 
-    std::cout << "size now: " << position_.size() << std::endl;
+    //std::cout << "size now: " << position_.size() << std::endl;
 }
 
 void EdvsCamera::clear()
