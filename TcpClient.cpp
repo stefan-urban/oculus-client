@@ -64,7 +64,7 @@ void TcpClient::do_read_body()
       {
         if (!ec)
         {
-            std::string const data = std::string(read_msg_.body());
+            std::string data = std::string(read_msg_.body());
 
             // Determine type
             size_t pos = data.find('|');
@@ -78,7 +78,7 @@ void TcpClient::do_read_body()
 
             // Pack new event and dispatch it
             auto e = DispatcherEvent(type, data.substr(pos + 1));
-            dispatcher_->dispatch(e);
+            dispatcher_->dispatch(&e);
 
             // And restart with waiting for the next header
             do_read_header();

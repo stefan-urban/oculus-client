@@ -6,7 +6,7 @@
 #include <boost/thread.hpp>
 
 #include "Common.h"
-#include "EdvsImageHandler.hpp"
+#include "EdvsEventHandler.hpp"
 #include "EdvsRiftApp.h"
 #include "TcpClient.hpp"
 #include "JoystickEventHandler.hpp"
@@ -24,13 +24,11 @@ int global_stop = 0;
 boost::asio::io_service io_service;
 boost::mutex mutex;
 
-int edvs_images_app(EdvsImageHandler *image_handler)
+int edvs_images_app(EdvsEventHandler *edvs_event_handler)
 {
     while (global_stop == 0)
     {
-        mutex.lock();
-        image_handler->camera(0)->clear();
-        mutex.unlock();
+        edvs_event_handler->clear();
 
         Platform::sleepMillis(200);
     }
@@ -40,15 +38,15 @@ int edvs_images_app(EdvsImageHandler *image_handler)
 
 int joystick_app(TcpClient *tcp_client)
 {
-    auto joystick = new Joystick("/dev/input/js0");
-    auto event_handler = JoystickEventHandler(joystick);
+    auto joystick = Joystick("/dev/input/js0");
+    auto event_handler = JoystickEventHandler(&joystick);
 
     while (global_stop == 0)
     {
-        while (!joystick->isFound())
+        while (!joystick.isFound())
         {
             Platform::sleepMillis(500);
-            joystick->reconnect();
+            joystick.reconnect();
 
             if (global_stop)
             {
@@ -106,7 +104,7 @@ int joystick_app(TcpClient *tcp_client)
     return 0;
 }
 
-int oculus_rift_app(EdvsImageHandler *image_handler)
+int oculus_rift_app(EdvsEventHandler *edvs_event_handler)
 {
     if (!ovr_Initialize())
     {
@@ -118,7 +116,7 @@ int oculus_rift_app(EdvsImageHandler *image_handler)
 
     try
     {
-        EdvsRiftApp rift_app(image_handler, &mutex);
+        EdvsRiftApp rift_app(edvs_event_handler, &mutex);
         result = rift_app.run();
     }
     catch (std::exception & error)
@@ -143,14 +141,13 @@ int main(int argc, char* argv[])
     std::cout << "oculus-client v1" << std::endl;
 
     // Single eDVS camera images
-    auto image_handler = EdvsImageHandler(&mutex);
+    auto edvs_event_handler = EdvsEventHandler(&mutex);
 
 
     // Setup dispatcher
     auto dispatcher = new Dispatcher();
 
-    dispatcher->addListener(&image_handler, std::string("events"));
-
+    dispatcher->addListener(&edvs_event_handler, std::string("events"));
 
 
     // TCP client connection
@@ -162,8 +159,8 @@ int main(int argc, char* argv[])
 
 
     boost::thread jsa(joystick_app, &tcp_client);
-    boost::thread ora(oculus_rift_app, &image_handler);
-    boost::thread eia(edvs_images_app, &image_handler);
+    boost::thread ora(oculus_rift_app, &edvs_event_handler);
+    boost::thread eia(edvs_images_app, &edvs_event_handler);
 
 
     // Start client
@@ -178,3 +175,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+

@@ -2,7 +2,7 @@
 #define EDVSRIFTAPP_H
 
 #include "Common.h"
-#include "EdvsImageHandler.hpp"
+#include "EdvsEventHandler.hpp"
 
 #include <chrono>
 #include <boost/thread.hpp>
@@ -25,8 +25,9 @@ struct MeshInputFile
 class EdvsRiftApp : public RiftApp
 {
 public:
-    EdvsRiftApp(EdvsImageHandler *image_handler, boost::mutex *mutex)
-        : image_handler_(image_handler)
+    EdvsRiftApp(EdvsEventHandler *edvs_event_handler, boost::mutex *mutex)
+        : edvs_event_handler_(edvs_event_handler)
+        , mutex_(mutex)
     {
     }
 
@@ -37,21 +38,26 @@ public:
 
 private:
     float azimuth = 0.0;
-    float elevation = 0.0;
+    float elevation = -20.0 * DEGREES_TO_RADIANS;
 
-    void drawEvents(int camera);
+    void drawEvents();
     void drawSphereBackground(int camera);
 
     MeshInputFile mesh_input;
 
-    EdvsImageHandler *image_handler_;
+    EdvsEventHandler *edvs_event_handler_;
 
     VertexArrayPtr vao;
     BufferPtr vbo_position;
     BufferPtr vbo_color;
-    BufferPtr indices;
+    BufferPtr vbo_camera_id;
 
     boost::mutex *mutex_;
+
+    std::vector<GLfloat> parity_;
+    std::vector<GLfloat> position_;
+    std::vector<GLfloat> camera_id_;
+    std::vector<unsigned long long> time_;
 };
 
 

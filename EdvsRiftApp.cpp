@@ -7,8 +7,6 @@
 using namespace oglplus;
 
 
-static EdvsCamera camera[7];
-
 void EdvsRiftApp::initGl()
 {
     RiftApp::initGl();
@@ -16,19 +14,22 @@ void EdvsRiftApp::initGl()
     vao = VertexArrayPtr(new VertexArray());
     vbo_position = BufferPtr(new Buffer());
     vbo_color = BufferPtr(new Buffer());
-    indices = BufferPtr(new Buffer());
+    vbo_camera_id = BufferPtr(new Buffer());
 }
 
 void EdvsRiftApp::update()
 {
     RiftApp::update();
 
-    //mutex_->lock();
-    camera[0] = *(image_handler_->camera(0));
-    //mutex_->unlock();
+    mutex_->lock();
+    parity_ = edvs_event_handler_->parity();
+    position_ = edvs_event_handler_->position();
+    camera_id_ = edvs_event_handler_->camera_id();
+    time_ = edvs_event_handler_->time();
+    mutex_->unlock();
 }
 
-void EdvsRiftApp::drawEvents(int camera_id)
+void EdvsRiftApp::drawEvents()
 {
     static ProgramPtr program = oria::loadProgram("./resources/event_pixel.vs", "./resources/event_pixel.fs");
     static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
@@ -52,6 +53,14 @@ void EdvsRiftApp::drawEvents(int camera_id)
         Mat4Uniform(*program, "ModelView").Set(Stacks::modelview().top());
         Mat4Uniform(*program, "Projection").Set(Stacks::projection().top());
 
+        // Manual set for azimuth and elevation
+        oglplus::Uniform<float>(*program, "ManAzimuth").Set(azimuth);
+        oglplus::Uniform<float>(*program, "ManElevation").Set(elevation);
+
+        // Manual set for field of view
+        oglplus::Uniform<float>(*program, "FovX").Set(60.0 * DEGREES_TO_RADIANS);
+        oglplus::Uniform<float>(*program, "FovY").Set(60.0 * DEGREES_TO_RADIANS);
+
 
         // Bind VAO
         vao->Bind();
@@ -59,26 +68,35 @@ void EdvsRiftApp::drawEvents(int camera_id)
         // Bind VBO "Positions"
         vbo_position->Bind(Buffer::Target::Array);
         {
-            Buffer::Data(Buffer::Target::Array, camera[camera_id].positions(), BufferUsage::StreamDraw);
+            Buffer::Data(Buffer::Target::Array, position_);
 
             VertexArrayAttrib vao_attr(*program, "Position");
             vao_attr.Setup<Vec2f>();
             vao_attr.Enable();
         }
 
+        // Bind VBO "CameraId"
+        vbo_camera_id->Bind(Buffer::Target::Array);
+        {
+            Buffer::Data(Buffer::Target::Array, camera_id_);
+
+            VertexArrayAttrib vao_attr(*program, "CameraId");
+            vao_attr.Setup<Vec1f>();
+            vao_attr.Enable();
+        }
+
         // Bind VBO "Color"
         vbo_color->Bind(Buffer::Target::Array);
         {
-            Buffer::Data(Buffer::Target::Array, camera[camera_id].intensities(), BufferUsage::StreamDraw);
+            Buffer::Data(Buffer::Target::Array, parity_); //, BufferUsage::StreamDraw);
 
             VertexArrayAttrib vao_attr(*program, "Color");
             vao_attr.Setup<Vec1f>();
             vao_attr.Enable();
         }
 
-
         // Draw all elements
-        Context::DrawArrays(PrimitiveType::Points, 0, camera[camera_id].size());
+        Context::DrawArrays(PrimitiveType::Points, 0, camera_id_.size());
     });
 
     // Unbind
@@ -124,46 +142,24 @@ void EdvsRiftApp::renderScene()
 {
     using namespace oglplus;
 
+    Context::ClearColor(0.0f, 0.2f, 0.9f, 0.0f);
+    Context::ClearDepth(1.0f);
+    Context::Clear().ColorBuffer();
     Context::Clear().DepthBuffer();
-    glClearColor(0.0f, 0.2f, 0.9f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
     MatrixStack & mv = Stacks::modelview();
 
     Context::Disable(Capability::CullFace);
     glDisable(GL_CULL_FACE);
 
-    /*
-    mv.withPush([&]
-    {
-        mv.rotate(elevation, glm::vec3(1.0, 0.0, 0.0));
-
-        mv.rotate(240 * DEGREES_TO_RADIANS, glm::vec3(0.0, 1.0, 0.0));
-        mv.rotate(azimuth, glm::vec3(0.0, 1.0, 0.0));
-
-        mv.scale(10.1f);
-        drawEvents(3);
-    });
 
     mv.withPush([&]
     {
-        mv.rotate(elevation, glm::vec3(1.0, 0.0, 0.0));
-
-        mv.rotate(120 * DEGREES_TO_RADIANS, glm::vec3(0.0, 1.0, 0.0));
-        mv.rotate(azimuth, glm::vec3(0.0, 1.0, 0.0));
-
+        mv.rotate(90 * DEGREES_TO_RADIANS, glm::vec3(1.0, 0.0, 0.0));
         mv.scale(10.1f);
-        drawEvents(3);
-    });
-    */
 
-    mv.withPush([&]
-    {
-        mv.rotate(elevation, glm::vec3(1.0, 0.0, 0.0));
-        mv.rotate(azimuth + 90 * DEGREES_TO_RADIANS, glm::vec3(0.0, 1.0, 0.0));
-
-        mv.scale(10.1f);
-        drawEvents(0);
+        drawEvents();
     });
 
     Context::Enable(Capability::CullFace);

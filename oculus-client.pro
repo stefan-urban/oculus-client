@@ -54,10 +54,9 @@ SOURCES += \
     JoystickEventHandler.cpp \
     vendor/joystick/joystick.cc \
     vendor/oculus-server/Message_JoystickState.cpp \
-    EdvsImageHandler.cpp \
     vendor/dispatcher/Dispatcher.cpp \
     vendor/oculus-server/Message_RobotCommand.cpp \
-    EdvsCamera.cpp
+    EdvsEventHandler.cpp
 
 HEADERS += \
     TcpClient.hpp \
@@ -103,10 +102,9 @@ HEADERS += \
     JoystickEventHandler.hpp \
     vendor/joystick/joystick.hh \
     vendor/oculus-server/Message_JoystickState.hpp \
-    EdvsImageHandler.hpp \
     vendor/dispatcher/Dispatcher.hpp \
     vendor/oculus-server/Message_RobotCommand.hpp \
-    EdvsCamera.hpp
+    EdvsEventHandler.hpp
 
 DISTFILES += \
     resources/sphere_background.fs \
