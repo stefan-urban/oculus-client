@@ -60,7 +60,7 @@ void TcpClient::do_read_header()
         {
             if (!ec)
             {
-                unsigned long body_size;
+                unsigned long body_size = 0;
 
                 for (size_t i = 0; i < header_length; i++)
                 {
