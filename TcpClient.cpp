@@ -58,7 +58,7 @@ void TcpClient::do_read_header()
     boost::asio::async_read(socket_, boost::asio::buffer(read_header_),
         [this](boost::system::error_code ec, std::size_t /*length*/)
         {
-            if (!ec)
+            if (!ec || read_header_.size() != header_length)
             {
                 unsigned long body_size = 0;
 
@@ -81,7 +81,7 @@ void TcpClient::do_read_header()
 
 void TcpClient::do_read_body()
 {
-    boost::asio::async_read(socket_, boost::asio::buffer(read_body_),
+    boost::asio::async_read(socket_, boost::asio::buffer(read_body_, read_body_.size()),
         [this](boost::system::error_code ec, std::size_t /*length*/)
         {
             if (!ec)

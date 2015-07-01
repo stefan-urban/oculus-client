@@ -34,6 +34,7 @@ public:
       , dispatcher_(dispatcher)
     {
         do_connect(endpoint_iterator);
+        read_header_.resize(header_length);
     }
 
   void deliver(Message *msg);
