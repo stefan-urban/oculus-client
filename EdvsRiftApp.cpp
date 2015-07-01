@@ -142,7 +142,7 @@ void EdvsRiftApp::renderScene()
 {
     using namespace oglplus;
 
-    Context::ClearColor(0.0f, 0.2f, 0.9f, 0.0f);
+    Context::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     Context::ClearDepth(1.0f);
     Context::Clear().ColorBuffer();
     Context::Clear().DepthBuffer();

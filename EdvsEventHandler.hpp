@@ -11,6 +11,8 @@
 class EdvsEventHandler : public DispatcherListener
 {
 public:
+    enum { max_event_time = 50 * 1000 };
+
     EdvsEventHandler(boost::mutex *mutex)
         : mutex_(mutex)
     {
@@ -53,7 +55,7 @@ private:
 
     boost::mutex *mutex_;
 
-    const int max_events_number_ = 50000;
+    const int max_events_number_ = 30000;
 };
 
 #endif // EDVSEVENTHANDLER_H

@@ -1,6 +1,8 @@
 #include "EdvsEventHandler.hpp"
 #include "vendor/oculus-server/Message_EventCollection.hpp"
 
+#include <cmath>
+#include <random>
 
 void EdvsEventHandler::event(DispatcherEvent* event)
 {
@@ -33,17 +35,33 @@ void EdvsEventHandler::event(DispatcherEvent* event)
 
 void EdvsEventHandler::clear()
 {
-    mutex_->lock();
-
     camera_id_.clear();
     position_.clear();
     parity_.clear();
     time_.clear();
-
-    mutex_->unlock();
 }
 
 void EdvsEventHandler::update()
 {
-    long long unsigned max_time = 100 * 1000; // 100 ms
+    mutex_->lock();
+
+    max_event_time;
+
+    for (size_t i = 0; i < camera_id_.size(); i++)
+    {
+        if (std::fabs(parity_[i]) < 0.3)
+        {
+            camera_id_.erase(camera_id_.begin() + i);
+            position_.erase(position_.begin() + 2*i);
+            position_.erase(position_.begin() + 2*i);
+            parity_.erase(parity_.begin() + i);
+            time_.erase(time_.begin() + i);
+        }
+        else
+        {
+            parity_[i] *= 0.7;
+        }
+    }
+
+    mutex_->unlock();
 }

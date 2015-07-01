@@ -29,9 +29,9 @@ int edvs_images_app(EdvsEventHandler *edvs_event_handler)
 {
     while (global_stop == 0)
     {
-        edvs_event_handler->clear();
+        edvs_event_handler->update();
 
-        Platform::sleepMillis(200);
+        Platform::sleepMillis(50);
     }
 
     return 0;
