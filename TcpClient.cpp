@@ -1,113 +1,130 @@
 
 #include "TcpClient.hpp"
-#include "vendor/oculus-server/TcpMessage.hpp"
-#include "vendor/oculus-server/Message_EventCollection.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
 
 #include <string>
 
-void TcpClient::deliver(TcpMessage& msg)
+void TcpClient::deliver(Message *msg)
 {
-    msg.encode();
+    // Insert type
+    unsigned char type = msg->get_type();
+    std::vector<unsigned char> data = msg->serialize();
 
-  io_service_.post(
-      [this, msg]()
-      {
-        bool write_in_progress = !write_msgs_.empty();
-        write_msgs_.push_back(msg);
-        if (!write_in_progress)
+    data.insert(data.begin(), type);
+
+    // Insert message length
+    unsigned long body_size = data.size();
+
+    for (size_t i = 0; i < header_length; i++)
+    {
+        data.insert(data.begin(), (body_size >> (i*8)) & 0xFF);
+    }
+
+    // Send message
+    io_service_.post(
+        [this, data]()
         {
-          do_write();
-        }
-      });
+            bool write_in_progress = !write_buffer_.empty();
+
+            write_buffer_.push_back(data);
+
+            if (!write_in_progress)
+            {
+                do_write();
+            }
+        });
 }
 
 void TcpClient::close()
 {
-  io_service_.post([this]() { socket_.close(); });
+    io_service_.post([this]() { socket_.close(); });
 }
 
-void TcpClient::do_connect(tcp::resolver::iterator endpoint_iterator)
+void TcpClient::do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 {
-  boost::asio::async_connect(socket_, endpoint_iterator,
-      [this](boost::system::error_code ec, tcp::resolver::iterator)
-      {
-        if (!ec)
+    boost::asio::async_connect(socket_, endpoint_iterator,
+        [this](boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator)
         {
-          do_read_header();
-        }
-      });
+            if (!ec)
+            {
+                do_read_header();
+            }
+        });
 }
 
 void TcpClient::do_read_header()
 {
-  boost::asio::async_read(socket_,
-      boost::asio::buffer(read_msg_.data(), TcpMessage::header_length),
-      [this](boost::system::error_code ec, std::size_t /*length*/)
-      {
-        if (!ec && read_msg_.decode_header())
+
+    boost::asio::async_read(socket_, boost::asio::buffer(read_header_),
+        [this](boost::system::error_code ec, std::size_t /*length*/)
         {
-          do_read_body();
-        }
-        else
-        {
-          socket_.close();
-        }
-      });
+            if (!ec)
+            {
+                unsigned long body_size;
+
+                for (size_t i = 0; i < header_length; i++)
+                {
+                    body_size |= read_header_[i] << ((header_length - i - 1) * 8);
+                }
+
+                read_body_.resize(body_size);
+
+                // Now we know how long the message is, finally read it
+                do_read_body();
+            }
+            else
+            {
+                socket_.close();
+            }
+        });
 }
 
 void TcpClient::do_read_body()
 {
-  boost::asio::async_read(socket_,
-      boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
-      [this](boost::system::error_code ec, std::size_t /*length*/)
-      {
-        if (!ec)
+    boost::asio::async_read(socket_, boost::asio::buffer(read_body_),
+        [this](boost::system::error_code ec, std::size_t /*length*/)
         {
-            std::string data = std::string(read_msg_.body());
-
-            // Determine type
-            size_t pos = data.find('|');
-
-            if (pos == std::string::npos || pos < 2)
+            if (!ec)
             {
-                return;
+                // Determine type
+                unsigned char type = read_body_[0];
+
+                // Erase type from data block
+                read_body_.erase(read_body_.begin());
+
+                // Pack new event and dispatch it
+                auto e = DispatcherEvent(type, &read_body_);
+                dispatcher_->dispatch(&e);
+
+                // And go back to reading the header
+                do_read_header();
             }
-
-            std::string type = data.substr(0, pos);
-
-            // Pack new event and dispatch it
-            auto e = DispatcherEvent(type, data.substr(pos + 1));
-            dispatcher_->dispatch(&e);
-
-            // And restart with waiting for the next header
-            do_read_header();
-        }
-        else
-        {
-          socket_.close();
-        }
-      });
+            else
+            {
+                socket_.close();
+            }
+        });
 }
 
 void TcpClient::do_write()
 {
-  boost::asio::async_write(socket_,
-      boost::asio::buffer(write_msgs_.front().data(),
-        write_msgs_.front().length()),
-      [this](boost::system::error_code ec, std::size_t /*length*/)
-      {
-        if (!ec)
+    boost::asio::async_write(socket_, boost::asio::buffer(write_buffer_.front()),
+        [this](boost::system::error_code ec, std::size_t /*length*/)
         {
-          write_msgs_.pop_front();
-          if (!write_msgs_.empty())
-          {
-            do_write();
-          }
-        }
-        else
-        {
-          socket_.close();
-        }
-      });
+            if (!ec)
+            {
+                // Delete transmitted message
+                write_buffer_.pop_front();
+
+                // Continue transmitting if there are still messages left
+                if (!write_buffer_.empty())
+                {
+                    do_write();
+                }
+            }
+            else
+            {
+                socket_.close();
+            }
+        });
 }

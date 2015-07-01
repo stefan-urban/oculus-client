@@ -49,11 +49,9 @@ SOURCES += \
     vendor/oculus-server/EdvsEventsCollection.cpp \
     vendor/oculus-server/Message.cpp \
     vendor/oculus-server/Message_EventCollection.cpp \
-    vendor/oculus-server/TcpMessage.cpp \
     Common.cpp \
     JoystickEventHandler.cpp \
     vendor/joystick/joystick.cc \
-    vendor/oculus-server/Message_JoystickState.cpp \
     vendor/dispatcher/Dispatcher.cpp \
     vendor/oculus-server/Message_RobotCommand.cpp \
     EdvsEventHandler.cpp
@@ -97,11 +95,9 @@ HEADERS += \
     vendor/oculus-server/EdvsEventsCollection.hpp \
     vendor/oculus-server/Message.hpp \
     vendor/oculus-server/Message_EventCollection.hpp \
-    vendor/oculus-server/TcpMessage.hpp \
     opengl/Errors.hpp \
     JoystickEventHandler.hpp \
     vendor/joystick/joystick.hh \
-    vendor/oculus-server/Message_JoystickState.hpp \
     vendor/dispatcher/Dispatcher.hpp \
     vendor/oculus-server/Message_RobotCommand.hpp \
     EdvsEventHandler.hpp

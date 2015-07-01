@@ -14,6 +14,7 @@
 #include "vendor/joystick/joystick.hh"
 #include "vendor/dispatcher/Dispatcher.hpp"
 #include "vendor/oculus-server/Message_RobotCommand.hpp"
+#include "vendor/oculus-server/Message_EventCollection.hpp"
 
 #include "PhotoSphereExample.h"
 
@@ -91,11 +92,7 @@ int joystick_app(TcpClient *tcp_client)
 
         // Transmit changes
         auto msg = Message_RobotCommand(direction, speed);
-
-        TcpMessage tcpMsg;
-        tcpMsg.message(&msg);
-
-        tcp_client->deliver(tcpMsg);
+        tcp_client->deliver(&msg);
 
 
         Platform::sleepMillis(100);
@@ -147,7 +144,7 @@ int main(int argc, char* argv[])
     // Setup dispatcher
     auto dispatcher = new Dispatcher();
 
-    dispatcher->addListener(&edvs_event_handler, std::string("events"));
+    dispatcher->addListener(&edvs_event_handler, Message_EventCollection::type_id);
 
 
     // TCP client connection

@@ -2,8 +2,6 @@
 #define JOYSTICKEVENTHANDLER_HPP
 
 #include "Common.h"
-#include "vendor/oculus-server/TcpMessage.hpp"
-#include "vendor/oculus-server/Message_JoystickState.hpp"
 #include "vendor/joystick/joystick.hh"
 
 class JoystickEventHandler

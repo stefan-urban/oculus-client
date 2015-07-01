@@ -14,20 +14,6 @@ public:
     EdvsEventHandler(boost::mutex *mutex)
         : mutex_(mutex)
     {
-        /*
-        camera_id_.push_back((GLfloat) 0);
-        position_.push_back(((GLfloat) (128 - 64)) / 128.0);
-        position_.push_back(((GLfloat) (128 - 64)) / 128.0);
-        parity_.push_back((GLfloat) (1.0f));
-        time_.push_back(0);
-
-        camera_id_.push_back((GLfloat) 1);
-        position_.push_back(((GLfloat) (128 - 62)) / 128.0);
-        position_.push_back(((GLfloat) (128 - 62)) / 128.0);
-        parity_.push_back((GLfloat) (-1.0f));
-        time_.push_back(0);
-        */
-
         parity_.reserve(max_events_number_);
         position_.reserve(max_events_number_ * 2);
         camera_id_.reserve(max_events_number_);

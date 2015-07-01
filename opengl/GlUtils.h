@@ -18,6 +18,7 @@
  ************************************************************************************/
 
 #pragma once
+#include "Common.h"
 
 typedef std::shared_ptr<oglplus::shapes::ShapeWrapper> ShapeWrapperPtr;
 typedef std::shared_ptr<oglplus::Buffer> BufferPtr;
