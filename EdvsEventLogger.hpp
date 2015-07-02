@@ -17,7 +17,7 @@ public:
 private:
     enum { max_events = 10000 };
 
-    std::string logfile_ = "logfiles/test";
+    std::string logfile_ = "logfiles/data";
     std::string create_path(std::string file, int i);
 
     std::array<Edvs::Event, max_events> events_;

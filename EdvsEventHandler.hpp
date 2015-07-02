@@ -55,7 +55,7 @@ private:
 
     boost::mutex *mutex_;
 
-    const int max_events_number_ = 30000;
+    const int max_events_number_ = 50000;
 };
 
 #endif // EDVSEVENTHANDLER_H

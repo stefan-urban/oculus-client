@@ -32,7 +32,7 @@ int edvs_images_app(EdvsEventHandler *edvs_event_handler)
     {
         edvs_event_handler->update();
 
-        Platform::sleepMillis(50);
+        Platform::sleepMillis(30);
     }
 
     return 0;
@@ -127,9 +127,7 @@ int oculus_rift_app(EdvsEventHandler *edvs_event_handler)
     try
     {
         EdvsRiftApp rift_app(edvs_event_handler, &mutex);
-        //result = rift_app.run();
-
-        while(1);
+        result = rift_app.run();
     }
     catch (std::exception & error)
     {

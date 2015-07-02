@@ -9,7 +9,7 @@ void EdvsEventHandler::event(DispatcherEvent* event)
     Message_EventCollection msg_events;
     msg_events.unserialize(event->data());
 
-    mutex_->lock();
+
 
     for(Edvs::Event& e : msg_events.events())
     {
@@ -21,15 +21,17 @@ void EdvsEventHandler::event(DispatcherEvent* event)
 
         if (e.id < 7)
         {
+            mutex_->lock();
+
             camera_id_.push_back((GLuint) e.id);
-            position_.push_back(((GLfloat) (e.y)) / 128.0);
             position_.push_back(((GLfloat) (e.x)) / 128.0);
+            position_.push_back(((GLfloat) (e.y)) / 128.0);
             parity_.push_back((GLfloat) (e.parity ? 1.0f : -1.0f));
             time_.push_back(e.t);
+
+            mutex_->unlock();
         }
     }
-
-    mutex_->unlock();
 }
 
 void EdvsEventHandler::clear()
@@ -44,11 +46,9 @@ void EdvsEventHandler::update()
 {
     mutex_->lock();
 
-    max_event_time;
-
     for (size_t i = 0; i < camera_id_.size(); i++)
     {
-        if (std::fabs(parity_[i]) < 0.3)
+        if (std::fabs(parity_[i]) < 0.9)
         {
             camera_id_.erase(camera_id_.begin() + i);
             position_.erase(position_.begin() + 2*i);
@@ -58,7 +58,7 @@ void EdvsEventHandler::update()
         }
         else
         {
-            parity_[i] *= 0.7;
+            parity_[i] *= 0.5;
         }
     }
 
