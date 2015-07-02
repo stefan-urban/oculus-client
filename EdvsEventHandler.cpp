@@ -7,7 +7,6 @@
 void EdvsEventHandler::event(DispatcherEvent* event)
 {
     Message_EventCollection msg_events;
-
     msg_events.unserialize(event->data());
 
     mutex_->lock();

@@ -19,6 +19,7 @@ install_it.files += resources/sphere_background.fs
 install_it.files += resources/sphere_background.vs
 install_it.files += resources/spherical_calotte.obj
 
+
 INSTALLS += \
     install_it
 
@@ -54,7 +55,8 @@ SOURCES += \
     vendor/joystick/joystick.cc \
     vendor/dispatcher/Dispatcher.cpp \
     vendor/oculus-server/Message_RobotCommand.cpp \
-    EdvsEventHandler.cpp
+    EdvsEventHandler.cpp \
+    EdvsEventLogger.cpp
 
 HEADERS += \
     TcpClient.hpp \
@@ -100,7 +102,8 @@ HEADERS += \
     vendor/joystick/joystick.hh \
     vendor/dispatcher/Dispatcher.hpp \
     vendor/oculus-server/Message_RobotCommand.hpp \
-    EdvsEventHandler.hpp
+    EdvsEventHandler.hpp \
+    EdvsEventLogger.hpp
 
 DISTFILES += \
     resources/sphere_background.fs \

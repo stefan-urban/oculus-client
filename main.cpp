@@ -7,6 +7,7 @@
 
 #include "Common.h"
 #include "EdvsEventHandler.hpp"
+#include "EdvsEventLogger.hpp"
 #include "EdvsRiftApp.h"
 #include "TcpClient.hpp"
 #include "JoystickEventHandler.hpp"
@@ -32,6 +33,18 @@ int edvs_images_app(EdvsEventHandler *edvs_event_handler)
         edvs_event_handler->update();
 
         Platform::sleepMillis(50);
+    }
+
+    return 0;
+}
+
+int edvs_logging_app(EdvsEventLogger *edvs_event_logger)
+{
+    while (global_stop == 0)
+    {
+        edvs_event_logger->update();
+
+        Platform::sleepMillis(1000);
     }
 
     return 0;
@@ -114,7 +127,9 @@ int oculus_rift_app(EdvsEventHandler *edvs_event_handler)
     try
     {
         EdvsRiftApp rift_app(edvs_event_handler, &mutex);
-        result = rift_app.run();
+        //result = rift_app.run();
+
+        while(1);
     }
     catch (std::exception & error)
     {
@@ -137,14 +152,22 @@ int main(int argc, char* argv[])
 {
     std::cout << "oculus-client v1" << std::endl;
 
+    if (argc != 3)
+    {
+        std::cout << "usage: oculus-client ip port" << std::endl;
+        return 0;
+    }
+
     // Single eDVS camera images
     auto edvs_event_handler = EdvsEventHandler(&mutex);
+    auto edvs_event_logger = EdvsEventLogger();
 
 
     // Setup dispatcher
     auto dispatcher = new Dispatcher();
 
     dispatcher->addListener(&edvs_event_handler, Message_EventCollection::type_id);
+    dispatcher->addListener(&edvs_event_logger, Message_EventCollection::type_id);
 
 
     // TCP client connection
@@ -158,6 +181,7 @@ int main(int argc, char* argv[])
     boost::thread jsa(joystick_app, &tcp_client);
     boost::thread ora(oculus_rift_app, &edvs_event_handler);
     boost::thread eia(edvs_images_app, &edvs_event_handler);
+    boost::thread ela(edvs_logging_app, &edvs_event_logger);
 
 
     // Start client
@@ -169,6 +193,7 @@ int main(int argc, char* argv[])
     jsa.join();
     ora.join();
     eia.join();
+    ela.join();
 
     return 0;
 }
