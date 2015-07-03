@@ -9,8 +9,6 @@ void EdvsEventHandler::event(DispatcherEvent* event)
     Message_EventCollection msg_events;
     msg_events.unserialize(event->data());
 
-
-
     for(Edvs::Event& e : msg_events.events())
     {
         if (camera_id_.size() >= max_events_number_)
@@ -18,6 +16,8 @@ void EdvsEventHandler::event(DispatcherEvent* event)
             std::cout << "max events size reached, allocate more memory" << std::endl;
             continue;
         }
+
+        //std::cout << "time: " << e.t << std::endl;
 
         if (e.id < 7)
         {

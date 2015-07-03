@@ -44,7 +44,7 @@ void EdvsEventLogger::update()
     for (size_t i = 0; i < 7; i++)
     {
         std::string path = create_path(logfile_, i);
-        logfile.at(i).open(path, std::ofstream::out | std::ofstream::ate);
+        logfile.at(i).open(path, std::ofstream::out | std::ios::app);
 
         if (!logfile.at(i).is_open())
         {
@@ -53,9 +53,10 @@ void EdvsEventLogger::update()
         }
     }
 
+
     for (size_t i = 0; i < it_; i++)
     {
-        logfile.at(events_[i].id) << std::setw(3) << std::to_string(events_[i].x) << " " << std::setw(3) << std::to_string(events_[i].y) << " " << std::to_string(events_[i].parity) << " " << (events_[i].t) << std::endl;
+        logfile.at(events_[i].id) << std::setw(3) << std::to_string(events_[i].x) << " " << std::setw(3) << std::to_string(events_[i].y) << " " << std::to_string(events_[i].parity) << " " << std::to_string(events_[i].t) << std::endl;
     }
 
     for (size_t i = 0; i < 7; i++)
@@ -63,7 +64,7 @@ void EdvsEventLogger::update()
         logfile.at(i).close();
     }
 
-    std::cout << "Did write " << std::to_string(it_) << " events to files" << std::endl;
+//    std::cout << "Did write " << std::to_string(it_) << " events to files (time diff: " << std::to_string(events_[0].t - events_[it_].t) << ")" << std::endl;
 
     // "Clear" array
     it_ = 0;

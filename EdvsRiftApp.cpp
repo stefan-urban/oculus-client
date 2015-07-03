@@ -61,13 +61,11 @@ void EdvsRiftApp::update()
 void EdvsRiftApp::drawEvents()
 {
     static ProgramPtr program = oria::loadProgram("./resources/event_pixel.vs", "./resources/event_pixel.fs");
-    static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
 
     // Reset before application exit
     Platform::addShutdownHook([]
     {
         program.reset();
-        geometry.reset();
     });
 
 
