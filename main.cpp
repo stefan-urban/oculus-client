@@ -114,7 +114,7 @@ int joystick_app(TcpClient *tcp_client)
     return 0;
 }
 
-int oculus_rift_app(EdvsEventHandler *edvs_event_handler)
+int oculus_rift_app(EdvsEventHandler *edvs_event_handler, Dispatcher *dispatcher)
 {
     if (!ovr_Initialize())
     {
@@ -126,7 +126,7 @@ int oculus_rift_app(EdvsEventHandler *edvs_event_handler)
 
     try
     {
-        EdvsRiftApp rift_app(edvs_event_handler, &mutex);
+        EdvsRiftApp rift_app(edvs_event_handler, &mutex, dispatcher);
         result = rift_app.run();
     }
     catch (std::exception & error)
@@ -162,10 +162,10 @@ int main(int argc, char* argv[])
 
 
     // Setup dispatcher
-    auto dispatcher = new Dispatcher();
+    auto dispatcher = Dispatcher();
 
-    dispatcher->addListener(&edvs_event_handler, Message_EventCollection::type_id);
-    dispatcher->addListener(&edvs_event_logger, Message_EventCollection::type_id);
+    dispatcher.addListener(&edvs_event_handler, Message_EventCollection::type_id);
+    dispatcher.addListener(&edvs_event_logger, Message_EventCollection::type_id);
 
 
     // TCP client connection
@@ -173,11 +173,11 @@ int main(int argc, char* argv[])
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
     //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
 
-    TcpClient tcp_client(io_service, endpoint_iterator, dispatcher);
+    TcpClient tcp_client(io_service, endpoint_iterator, &dispatcher);
 
 
     boost::thread jsa(joystick_app, &tcp_client);
-    boost::thread ora(oculus_rift_app, &edvs_event_handler);
+    boost::thread ora(oculus_rift_app, &edvs_event_handler, &dispatcher);
     boost::thread eia(edvs_images_app, &edvs_event_handler);
     boost::thread ela(edvs_logging_app, &edvs_event_logger);
 

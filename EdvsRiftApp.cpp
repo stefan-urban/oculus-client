@@ -2,6 +2,7 @@
 #include "EdvsRiftApp.h"
 
 #include <random>
+#include <cstring>
 #include <glm/gtx/rotate_vector.hpp>
 
 using namespace oglplus;
@@ -27,6 +28,34 @@ void EdvsRiftApp::update()
     camera_id_ = edvs_event_handler_->camera_id();
     time_ = edvs_event_handler_->time();
     mutex_->unlock();
+
+    ovrTrackingState tracking_state = ovrHmd_GetTrackingState(hmd, 0.0);
+
+    auto orientation = glm::vec4(
+        tracking_state.CameraPose.Orientation.x,
+        tracking_state.CameraPose.Orientation.y,
+        tracking_state.CameraPose.Orientation.z,
+        tracking_state.CameraPose.Orientation.w
+        );
+
+    auto position = glm::vec3(
+        tracking_state.CameraPose.Position.x,
+        tracking_state.CameraPose.Position.y,
+        tracking_state.CameraPose.Position.z
+        );
+
+    tracking_info_t info = {
+        orientation,
+        position
+    };
+
+    std::vector<unsigned char> data;
+    data.resize(sizeof(tracking_info_t));
+
+    std::memcpy(&data[0], &info, sizeof(tracking_info_t));
+
+    auto e = DispatcherEvent(type_id, &data);
+    dispatcher_->dispatch(&e);
 }
 
 void EdvsRiftApp::drawEvents()

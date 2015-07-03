@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "EdvsEventHandler.hpp"
+#include "vendor/dispatcher/Dispatcher.hpp"
 
 #include <chrono>
 #include <boost/thread.hpp>
@@ -21,13 +22,22 @@ struct MeshInputFile
     }
 };
 
+typedef struct {
+    glm::vec4 orientation;
+    glm::vec3 position;
+} tracking_info_t;
+
+
 
 class EdvsRiftApp : public RiftApp
 {
 public:
-    EdvsRiftApp(EdvsEventHandler *edvs_event_handler, boost::mutex *mutex)
+    enum { type_id = 13 };
+
+    EdvsRiftApp(EdvsEventHandler *edvs_event_handler, boost::mutex *mutex, Dispatcher *dispatcher)
         : edvs_event_handler_(edvs_event_handler)
         , mutex_(mutex)
+        , dispatcher_(dispatcher)
     {
     }
 
@@ -53,6 +63,7 @@ private:
     BufferPtr vbo_camera_id;
 
     boost::mutex *mutex_;
+    Dispatcher *dispatcher_;
 
     std::vector<GLfloat> parity_;
     std::vector<GLfloat> position_;
