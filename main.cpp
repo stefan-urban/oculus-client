@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
     auto dispatcher = Dispatcher();
 
     dispatcher.addListener(&edvs_event_handler, Message_EventCollection2::type_id);
-//    dispatcher.addListener(&edvs_event_logger, Message_EventCollection2::type_id);
+    dispatcher.addListener(&edvs_event_logger, Message_EventCollection2::type_id);
 
 
     // TCP client connection
