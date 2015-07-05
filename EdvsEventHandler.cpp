@@ -1,15 +1,15 @@
 #include "EdvsEventHandler.hpp"
-#include "vendor/oculus-server/Message_EventCollection.hpp"
+#include "vendor/oculus-server/Message_EventCollection2.hpp"
 
 #include <cmath>
 #include <random>
 
 void EdvsEventHandler::event(DispatcherEvent* event)
 {
-    Message_EventCollection msg_events;
+    Message_EventCollection2 msg_events;
     msg_events.unserialize(event->data());
 
-    for(Edvs::Event& e : msg_events.events())
+    for(message_edvs_event_t& e : msg_events.events())
     {
         if (camera_id_.size() >= max_events_number_)
         {
@@ -27,7 +27,8 @@ void EdvsEventHandler::event(DispatcherEvent* event)
             position_.push_back(((GLfloat) (e.x)) / 128.0);
             position_.push_back(((GLfloat) (e.y)) / 128.0);
             parity_.push_back((GLfloat) (e.parity ? 1.0f : -1.0f));
-            time_.push_back(e.t);
+//            time_.push_back(e.t);
+            time_.push_back(0);
 
             mutex_->unlock();
         }

@@ -47,16 +47,15 @@ SOURCES += \
     Statics.cpp \
     Utils.cpp \
     EdvsRiftApp.cpp \
-    vendor/oculus-server/EdvsEventsCollection.cpp \
     vendor/oculus-server/Message.cpp \
-    vendor/oculus-server/Message_EventCollection.cpp \
     Common.cpp \
     JoystickEventHandler.cpp \
     vendor/joystick/joystick.cc \
     vendor/dispatcher/Dispatcher.cpp \
     vendor/oculus-server/Message_RobotCommand.cpp \
     EdvsEventHandler.cpp \
-    EdvsEventLogger.cpp
+    EdvsEventLogger.cpp \
+    vendor/oculus-server/Message_EventCollection2.cpp
 
 HEADERS += \
     TcpClient.hpp \
@@ -94,16 +93,15 @@ HEADERS += \
     Types.h \
     Utils.h \
     EdvsRiftApp.h \
-    vendor/oculus-server/EdvsEventsCollection.hpp \
     vendor/oculus-server/Message.hpp \
-    vendor/oculus-server/Message_EventCollection.hpp \
     opengl/Errors.hpp \
     JoystickEventHandler.hpp \
     vendor/joystick/joystick.hh \
     vendor/dispatcher/Dispatcher.hpp \
     vendor/oculus-server/Message_RobotCommand.hpp \
     EdvsEventHandler.hpp \
-    EdvsEventLogger.hpp
+    EdvsEventLogger.hpp \
+    vendor/oculus-server/Message_EventCollection2.hpp
 
 DISTFILES += \
     resources/sphere_background.fs \

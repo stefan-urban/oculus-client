@@ -186,7 +186,10 @@ void EdvsRiftApp::renderScene()
         mv.rotate(90 * DEGREES_TO_RADIANS, glm::vec3(1.0, 0.0, 0.0));
         mv.scale(10.1f);
 
-        drawEvents();
+        if (camera_id_.size() > 0)
+        {
+            drawEvents();
+        }
     });
 
     Context::Enable(Capability::CullFace);

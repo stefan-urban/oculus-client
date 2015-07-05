@@ -3,8 +3,6 @@
 #include <fstream>
 #include <iomanip>
 
-#include "vendor/oculus-server/Message_EventCollection.hpp"
-
 EdvsEventLogger::EdvsEventLogger()
 {
     std::array<std::ofstream, 7> logfile;
@@ -23,10 +21,10 @@ EdvsEventLogger::EdvsEventLogger()
 
 void EdvsEventLogger::event(DispatcherEvent* event)
 {
-    Message_EventCollection msg_events;
+    Message_EventCollection2 msg_events;
     msg_events.unserialize(event->data());
 
-    for(Edvs::Event& e : msg_events.events())
+    for(message_edvs_event_t& e : msg_events.events())
     {
         events_[it_++] = e;
 
@@ -56,7 +54,7 @@ void EdvsEventLogger::update()
 
     for (size_t i = 0; i < it_; i++)
     {
-        logfile.at(events_[i].id) << std::setw(3) << std::to_string(events_[i].x) << " " << std::setw(3) << std::to_string(events_[i].y) << " " << std::to_string(events_[i].parity) << " " << std::to_string(events_[i].t) << std::endl;
+        logfile.at(events_[i].id) << std::setw(3) << std::to_string(events_[i].x) << " " << std::setw(3) << std::to_string(events_[i].y) << " " << std::to_string(events_[i].parity) << std::endl;
     }
 
     for (size_t i = 0; i < 7; i++)

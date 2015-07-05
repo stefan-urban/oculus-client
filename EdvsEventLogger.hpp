@@ -3,9 +3,10 @@
 
 #include <array>
 #include <string>
+#include <iostream>
 
-#include "vendor/edvstools/Edvs/Event.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
+#include "vendor/oculus-server/Message_EventCollection2.hpp"
 
 class EdvsEventLogger : public DispatcherListener
 {
@@ -20,7 +21,7 @@ private:
     std::string logfile_ = "logfiles/data";
     std::string create_path(std::string file, int i);
 
-    std::array<Edvs::Event, max_events> events_;
+    std::array<message_edvs_event_t, max_events> events_;
     size_t it_ = 0;
 };
 

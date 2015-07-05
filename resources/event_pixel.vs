@@ -16,7 +16,6 @@ in float CameraId;
 in float Color;
 
 out float TexColor;
-out float test;
 
 void main()
 {
@@ -46,7 +45,6 @@ void main()
         gl_PointSize = 4.0;
 
         TexColor = Color;
-        test = 0.0;
     }
     else
     {
@@ -55,6 +53,5 @@ void main()
         gl_PointSize = 0.0;
 
         TexColor = Color;
-        test = 1.0;
     }
 }

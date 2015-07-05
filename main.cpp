@@ -15,7 +15,7 @@
 #include "vendor/joystick/joystick.hh"
 #include "vendor/dispatcher/Dispatcher.hpp"
 #include "vendor/oculus-server/Message_RobotCommand.hpp"
-#include "vendor/oculus-server/Message_EventCollection.hpp"
+#include "vendor/oculus-server/Message_EventCollection2.hpp"
 
 #include "PhotoSphereExample.h"
 
@@ -168,8 +168,8 @@ int main(int argc, char* argv[])
     // Setup dispatcher
     auto dispatcher = Dispatcher();
 
-    dispatcher.addListener(&edvs_event_handler, Message_EventCollection::type_id);
-    dispatcher.addListener(&edvs_event_logger, Message_EventCollection::type_id);
+    dispatcher.addListener(&edvs_event_handler, Message_EventCollection2::type_id);
+//    dispatcher.addListener(&edvs_event_logger, Message_EventCollection2::type_id);
 
 
     // TCP client connection
