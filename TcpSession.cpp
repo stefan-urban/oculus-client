@@ -1,10 +1,10 @@
 
-#include "TcpClient.hpp"
+#include "TcpSession.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
 
 #include <string>
 
-void TcpClient::deliver(Message *msg)
+void TcpSession::deliver(Message *msg)
 {
     // Insert type
     unsigned char type = msg->get_type();
@@ -35,12 +35,12 @@ void TcpClient::deliver(Message *msg)
         });
 }
 
-void TcpClient::close()
+void TcpSession::close()
 {
     io_service_.post([this]() { socket_.close(); });
 }
 
-void TcpClient::do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
+void TcpSession::do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 {
     boost::asio::async_connect(socket_, endpoint_iterator,
         [this](boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator)
@@ -52,7 +52,7 @@ void TcpClient::do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_ite
         });
 }
 
-void TcpClient::do_read_header()
+void TcpSession::do_read_header()
 {
 
     boost::asio::async_read(socket_, boost::asio::buffer(read_header_),
@@ -79,7 +79,7 @@ void TcpClient::do_read_header()
         });
 }
 
-void TcpClient::do_read_body()
+void TcpSession::do_read_body()
 {
     boost::asio::async_read(socket_, boost::asio::buffer(read_body_, read_body_.size()),
         [this](boost::system::error_code ec, std::size_t /*length*/)
@@ -106,7 +106,7 @@ void TcpClient::do_read_body()
         });
 }
 
-void TcpClient::do_write()
+void TcpSession::do_write()
 {
     boost::asio::async_write(socket_, boost::asio::buffer(write_buffer_.front()),
         [this](boost::system::error_code ec, std::size_t /*length*/)

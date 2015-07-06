@@ -25,7 +25,6 @@ INSTALLS += \
 
 SOURCES += \
     main.cpp \
-    TcpClient.cpp \
     vendor/edvstools/Edvs/EventIO.cpp \
     vendor/edvstools/Edvs/EventStream.cpp \
     vendor/edvstools/Edvs/edvs.c \
@@ -55,10 +54,10 @@ SOURCES += \
     vendor/oculus-server/Message_RobotCommand.cpp \
     EdvsEventHandler.cpp \
     EdvsEventLogger.cpp \
-    vendor/oculus-server/Message_EventCollection2.cpp
+    vendor/oculus-server/Message_EventCollection2.cpp \
+    TcpSession.cpp
 
 HEADERS += \
-    TcpClient.hpp \
     vendor/edvstools/Edvs/edvs.h \
     vendor/edvstools/Edvs/edvs_impl.h \
     vendor/edvstools/Edvs/event.h \
@@ -101,7 +100,8 @@ HEADERS += \
     vendor/oculus-server/Message_RobotCommand.hpp \
     EdvsEventHandler.hpp \
     EdvsEventLogger.hpp \
-    vendor/oculus-server/Message_EventCollection2.hpp
+    vendor/oculus-server/Message_EventCollection2.hpp \
+    TcpSession.hpp
 
 DISTFILES += \
     resources/sphere_background.fs \

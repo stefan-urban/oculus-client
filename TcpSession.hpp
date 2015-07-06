@@ -1,17 +1,6 @@
 
-//
-// chat_client.cpp
-// ~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
-
-#ifndef TCPCLIENT_H
-#define TCPCLIENT_H
+#ifndef TCPSESSION_H
+#define TCPSESSION_H
 
 #include <cstdlib>
 #include <deque>
@@ -23,12 +12,12 @@
 #include "vendor/oculus-server/Message.hpp"
 
 
-class TcpClient
+class TcpSession
 {
 public:
     enum { header_length = 4 };
 
-    TcpClient(boost::asio::io_service& io_service, boost::asio::ip::tcp::resolver::iterator endpoint_iterator, Dispatcher *dispatcher)
+    TcpSession(boost::asio::io_service& io_service, boost::asio::ip::tcp::resolver::iterator endpoint_iterator, Dispatcher *dispatcher)
       : io_service_(io_service)
       , socket_(io_service)
       , dispatcher_(dispatcher)
@@ -58,4 +47,4 @@ private:
 };
 
 
-#endif // TCPCLIENT_H
+#endif // TCPSESSION_H

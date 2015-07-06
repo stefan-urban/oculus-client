@@ -9,7 +9,7 @@
 #include "EdvsEventHandler.hpp"
 #include "EdvsEventLogger.hpp"
 #include "EdvsRiftApp.h"
-#include "TcpClient.hpp"
+#include "TcpSession.hpp"
 #include "JoystickEventHandler.hpp"
 #include "vendor/edvstools/Edvs/EventStream.hpp"
 #include "vendor/joystick/joystick.hh"
@@ -54,7 +54,7 @@ int edvs_logging_app(EdvsEventLogger *edvs_event_logger)
     return 0;
 }
 
-int joystick_app(TcpClient *tcp_client)
+int joystick_app(TcpSession *tcp_client)
 {
     auto joystick = Joystick("/dev/input/js0");
     auto event_handler = JoystickEventHandler(&joystick);
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
     //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
 
-    TcpClient tcp_client(io_service, endpoint_iterator, &dispatcher);
+    TcpSession tcp_client(io_service, endpoint_iterator, &dispatcher);
 
 
     boost::thread jsa(joystick_app, &tcp_client);
