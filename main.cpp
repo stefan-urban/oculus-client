@@ -123,6 +123,7 @@ int oculus_rift_app(EdvsEventHandler *edvs_event_handler, Dispatcher *dispatcher
     if (!ovr_Initialize())
     {
         SAY_ERR("Failed to initialize the Oculus SDK");
+        global_stop = 1;
         return -1;
     }
 
