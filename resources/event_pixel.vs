@@ -19,39 +19,28 @@ out float TexColor;
 
 void main()
 {
-    if (CameraId < 7.0)
-    {
-        // First transform the pixel position to spherical coordinates
-        float azimuth = (Position.x - 0.5) * FovX;
-        float elevation = (Position.y - 0.5) * FovY;
+    // First transform the pixel position to spherical coordinates
+    float azimuth = (Position.x - 0.5) * FovX;
+    float elevation = (Position.y - 0.5) * FovY;
 
-        // Translations for different camera
-        azimuth += 60 * PI / 180 * CameraId;
+    // Translations for different camera
+    azimuth += 60 * PI / 180 * CameraId;
 
-        // Manual control with arrow keys
-        azimuth += ManAzimuth;
-        elevation += ManElevation;
+    // Manual control with arrow keys
+    azimuth += ManAzimuth;
+    elevation += ManElevation;
 
-        // Convert these to cartesian coordinates
-        vec4 Coordinates = vec4(
-            cos(elevation) * cos(azimuth),
-            cos(elevation) * sin(azimuth),
-            sin(elevation),
-            1.0
-        );
+    // Convert these to cartesian coordinates
+    vec4 Coordinates = vec4(
+        cos(elevation) * cos(azimuth),
+        cos(elevation) * sin(azimuth),
+        sin(elevation),
+        1.0
+    );
 
-        // Calc final position
-        gl_Position = Projection * ModelView * Coordinates;
-        gl_PointSize = 4.0;
+    // Calc final position
+    gl_Position = Projection * ModelView * Coordinates;
+    gl_PointSize = 4.0;
 
-        TexColor = Color;
-    }
-    else
-    {
-        mat4 rot = mat4(vec3(0, 0, 1), vec3(0, 1, 0), vec3(-1, 0, 0));
-        gl_Position = Projection * ModelView * rot * Coordinates;
-        gl_PointSize = 0.0;
-
-        TexColor = Color;
-    }
+    TexColor = Color;
 }

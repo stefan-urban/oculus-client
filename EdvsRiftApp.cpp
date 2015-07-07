@@ -193,6 +193,7 @@ void EdvsRiftApp::renderScene()
     });
 
     Context::Enable(Capability::CullFace);
+    Context::Enable(Capability::ProgramPointSize);
 }
 
 void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
