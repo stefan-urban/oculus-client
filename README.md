@@ -26,7 +26,7 @@ Install the following packages by following the individual installation instruct
 
 # Building
 
-1. clone this repository
+1. clone this repository and make sure to get the submodules<br>`git clone https://github.com/stefan-urban/oculus-client.git && cd oculus-client`<br>`git submodule update --init`
 2. `mkdir build && cd build`
 3. `qmake ..`
 4. `make`

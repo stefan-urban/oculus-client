@@ -1,15 +1,6 @@
 [submodule "vendor/edvstools"]
 	path = vendor/edvstools
 	url = https://github.com/Danvil/edvstools.git
-[submodule "vendor/OculusSDK"]
-	path = vendor/OculusSDK
-	url = https://github.com/jherico/OculusSDK.git
-[submodule "vendor/glfw"]
-	path = vendor/glfw
-	url = https://github.com/glfw/glfw.git
-[submodule "vendor/oglplus"]
-	path = vendor/oglplus
-	url = https://github.com/matus-chochlik/oglplus.git
 [submodule "vendor/joystick"]
 	path = vendor/joystick
 	url = https://github.com/stefan-urban/joystick.git
