@@ -20,7 +20,7 @@ All in one command:<br>
 
 Install the following packages by following the individual installation instructions:
 - [OpenCTM](https://github.com/stefan-urban/OpenCTM.git)
-- [GLFW v3](https://github.com/glfw/glfw.git) - Make sure to install it as a shared library!
+- [GLFW v3](https://github.com/glfw/glfw.git) - Make sure to install it as a shared library!<br>`cmake -DBUILD_SHARED_LIBS=ON ..`
 - [OGLplus](https://github.com/matus-chochlik/oglplus.git)
 - [Oculus SDK for Linux (Experimental) 0.5.0.1-beta](https://developer.oculus.com/)
 
