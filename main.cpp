@@ -77,40 +77,22 @@ int joystick_app(TcpSession *tcp_client)
         // Calculate direction (x-y-system, y is looking forward)
         int axis_x = event_handler.axis(0);
         int axis_y = event_handler.axis(1);
+        int axis_a = event_handler.axis(2);
 
-        // Normalize vectors to -1 to +1
-        float max_val = 26000.0;
+        int x_speed = (int) (((float)axis_x / 30000.0f) * 70.0f);
+        int y_speed = (int) (((float)axis_y / 30000.0f) * 70.0f);
+        int angular_speed = (int) (((float)axis_a / 30000.0f) * 70.0f);
 
-        float direction_x = -1.0 * ((float) axis_x) / max_val;
-        float direction_y = -1.0 * ((float) axis_y) / max_val;
-
-        // Limit to absolute value of one
-        direction_x = direction_x > 1.0f ? 1.0f : direction_x;
-        direction_x = direction_x < -1.f ? -1.f : direction_x;
-        direction_y = direction_y > 1.0f ? 1.0f : direction_y;
-        direction_y = direction_y < -1.f ? -1.f : direction_y;
-
-        // Direction is the angle offset from "forward"
-        float direction = std::atan2(direction_x, direction_y);
-
-        if (direction < 0.0)
-        {
-            direction = TWO_PI + direction;
-        }
-
-        // Speed is simply the length of the vector, normalized to -1 to 1
-        float speed = sqrt(0.5 * (direction_x * direction_x + direction_y * direction_y));
-
-        // Correction, so that the controller allows speed 1.0 in every direction
-        float tmp = (std::sqrt(2.0) - 1.0) / 2.0;
-        float fac = std::cos(4*direction) * tmp + 1.0 + tmp;
-        speed *= fac;
-
+        x_speed = x_speed > 70 ? 70 : x_speed;
+        x_speed = x_speed < -70 ? -70 : x_speed;
+        y_speed = y_speed > 70 ? 70 : y_speed;
+        y_speed = y_speed < -70 ? -70 : y_speed;
+        angular_speed = angular_speed > 70 ? 70 : angular_speed;
+        angular_speed = angular_speed < -70 ? -70 : angular_speed;
 
         // Transmit changes
-        auto msg = Message_RobotCommand(direction, speed);
+        auto msg = Message_RobotCommand(x_speed, y_speed, angular_speed);
         tcp_client->deliver(&msg);
-
 
         Platform::sleepMillis(100);
     }
