@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "EdvsRiftApp.h"
+#include "InputEvent.hpp"
 
 #include <random>
 #include <cstring>
@@ -220,4 +221,12 @@ void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
     }
 
     RiftApp::onKey(key, scancode, action, mods);
+
+    // Dispatch all over events
+    auto input_event = InputEvent(key, scancode, action, mods);
+    auto data = input_event.serialize();
+
+    // Pack new event and dispatch it
+    auto e = DispatcherEvent(InputEvent::type_id, &data);
+    dispatcher_->dispatch(&e);
 }

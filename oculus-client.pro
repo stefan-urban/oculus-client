@@ -55,7 +55,8 @@ SOURCES += \
     EdvsEventHandler.cpp \
     EdvsEventLogger.cpp \
     vendor/oculus-server/Message_EventCollection2.cpp \
-    TcpSession.cpp
+    TcpSession.cpp \
+    InputEvent.cpp
 
 HEADERS += \
     vendor/edvstools/Edvs/edvs.h \
@@ -101,7 +102,8 @@ HEADERS += \
     EdvsEventHandler.hpp \
     EdvsEventLogger.hpp \
     vendor/oculus-server/Message_EventCollection2.hpp \
-    TcpSession.hpp
+    TcpSession.hpp \
+    InputEvent.hpp
 
 DISTFILES += \
     resources/sphere_background.fs \
