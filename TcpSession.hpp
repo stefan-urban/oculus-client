@@ -12,7 +12,7 @@
 #include "vendor/oculus-server/Message.hpp"
 
 
-class TcpSession
+class TcpSession : public DispatcherListener
 {
 public:
     enum { header_length = 4 };
@@ -28,6 +28,7 @@ public:
 
   void deliver(Message *msg);
   void close();
+  void event(DispatcherEvent* event);
 
 private:
   void do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator);

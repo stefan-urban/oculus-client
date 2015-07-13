@@ -1,8 +1,18 @@
 
 #include "TcpSession.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
+#include "vendor/oculus-server/Message_JoystickEvent.hpp"
 
 #include <string>
+
+
+void TcpSession::event(DispatcherEvent* event)
+{
+    auto msg = Message_JoystickEvent();
+    msg.unserialize(event->data());
+
+    deliver(&msg);
+}
 
 void TcpSession::deliver(Message *msg)
 {

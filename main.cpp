@@ -14,11 +14,13 @@
 #include "vendor/edvstools/Edvs/EventStream.hpp"
 #include "vendor/joystick/joystick.hh"
 #include "vendor/dispatcher/Dispatcher.hpp"
+#include "InputEvent.hpp"
+
 #include "vendor/oculus-server/Message_RobotCommand.hpp"
+#include "vendor/oculus-server/Message_JoystickEvent.hpp"
 #include "vendor/oculus-server/Message_EventCollection2.hpp"
 
 #include "PhotoSphereExample.h"
-#include "InputEvent.hpp"
 
 
 // 10.162.177.202 4000
@@ -155,13 +157,13 @@ int main(int argc, char* argv[])
     dispatcher.addListener(&edvs_event_handler, Message_EventCollection2::type_id);
     //dispatcher.addListener(&edvs_event_logger, Message_EventCollection2::type_id);
 
-
     // TCP client connection
     boost::asio::ip::tcp::resolver resolver(io_service);
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
     //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
 
     TcpSession tcp_client(io_service, endpoint_iterator, &dispatcher);
+    dispatcher.addListener(&tcp_client, Message_JoystickEvent::type_id);
 
 
     boost::thread jsa(joystick_app, &tcp_client, &dispatcher);

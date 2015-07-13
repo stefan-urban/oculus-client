@@ -1,6 +1,7 @@
 #include "JoystickEventHandler.hpp"
-#include "JoystickEvents.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
+
+#include "vendor/oculus-server/Message_JoystickEvent.hpp"
 
 int JoystickEventHandler::handle_events()
 {
@@ -34,10 +35,10 @@ void JoystickEventHandler::button_pressed(int id)
 {
     if (button_states_[id] == true)
     {
-        auto event = JoystickEvents(id, JoystickEvents::ButtonPressed);
+        auto event = Message_JoystickEvent(id, Message_JoystickEvent::ButtonPressed);
         auto data = event.serialize();
 
-        auto e = DispatcherEvent(JoystickEvents::type_id, &data);
+        auto e = DispatcherEvent(Message_JoystickEvent::type_id, &data);
         dispatcher_->dispatch(&e);
     }
 
@@ -48,10 +49,10 @@ void JoystickEventHandler::button_released(int id)
 {
     if (button_states_[id] == true)
     {
-        auto event = JoystickEvents(id, JoystickEvents::ButtonReleased);
+        auto event = Message_JoystickEvent(id, Message_JoystickEvent::ButtonReleased);
         auto data = event.serialize();
 
-        auto e = DispatcherEvent(JoystickEvents::type_id, &data);
+        auto e = DispatcherEvent(Message_JoystickEvent::type_id, &data);
         dispatcher_->dispatch(&e);
     }
 

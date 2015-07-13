@@ -57,7 +57,7 @@ SOURCES += \
     vendor/oculus-server/Message_EventCollection2.cpp \
     TcpSession.cpp \
     InputEvent.cpp \
-    JoystickEvents.cpp
+    vendor/oculus-server/Message_JoystickEvent.cpp
 
 HEADERS += \
     vendor/edvstools/Edvs/edvs.h \
@@ -105,7 +105,7 @@ HEADERS += \
     vendor/oculus-server/Message_EventCollection2.hpp \
     TcpSession.hpp \
     InputEvent.hpp \
-    JoystickEvents.hpp
+    vendor/oculus-server/Message_JoystickEvent.hpp
 
 DISTFILES += \
     resources/sphere_background.fs \
