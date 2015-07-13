@@ -18,6 +18,7 @@
 #include "vendor/oculus-server/Message_EventCollection2.hpp"
 
 #include "PhotoSphereExample.h"
+#include "InputEvent.hpp"
 
 
 // 10.162.177.202 4000
@@ -54,10 +55,10 @@ int edvs_logging_app(EdvsEventLogger *edvs_event_logger)
     return 0;
 }
 
-int joystick_app(TcpSession *tcp_client)
+int joystick_app(TcpSession *tcp_client, Dispatcher *dispatcher)
 {
     auto joystick = Joystick("/dev/input/js0");
-    auto event_handler = JoystickEventHandler(&joystick);
+    auto event_handler = JoystickEventHandler(&joystick, dispatcher);
 
     while (global_stop == 0)
     {
@@ -80,8 +81,8 @@ int joystick_app(TcpSession *tcp_client)
         int axis_a = event_handler.axis(2);
 
         int x_speed = (int) (((float)axis_x / 30000.0f) * 70.0f);
-        int y_speed = (int) (((float)axis_y / 30000.0f) * 70.0f);
-        int angular_speed = (int) (((float)axis_a / 30000.0f) * 70.0f);
+        int y_speed = (int) (((float)axis_y / -30000.0f) * 70.0f);
+        int angular_speed = (int) (((float)axis_a / -30000.0f) * 70.0f);
 
         x_speed = x_speed > 70 ? 70 : x_speed;
         x_speed = x_speed < -70 ? -70 : x_speed;
@@ -94,7 +95,7 @@ int joystick_app(TcpSession *tcp_client)
         auto msg = Message_RobotCommand(x_speed, y_speed, angular_speed);
         tcp_client->deliver(&msg);
 
-        Platform::sleepMillis(100);
+        Platform::sleepMillis(200);
     }
 
     return 0;
@@ -163,7 +164,7 @@ int main(int argc, char* argv[])
     TcpSession tcp_client(io_service, endpoint_iterator, &dispatcher);
 
 
-    boost::thread jsa(joystick_app, &tcp_client);
+    boost::thread jsa(joystick_app, &tcp_client, &dispatcher);
     boost::thread ora(oculus_rift_app, &edvs_event_handler, &dispatcher);
     boost::thread eia(edvs_images_app, &edvs_event_handler);
     boost::thread ela(edvs_logging_app, &edvs_event_logger);

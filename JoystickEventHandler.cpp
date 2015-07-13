@@ -1,5 +1,6 @@
 #include "JoystickEventHandler.hpp"
-
+#include "JoystickEvents.hpp"
+#include "vendor/dispatcher/Dispatcher.hpp"
 
 int JoystickEventHandler::handle_events()
 {
@@ -31,11 +32,29 @@ int JoystickEventHandler::handle_events()
 
 void JoystickEventHandler::button_pressed(int id)
 {
+    if (button_states_[id] == true)
+    {
+        auto event = JoystickEvents(id, JoystickEvents::ButtonPressed);
+        auto data = event.serialize();
+
+        auto e = DispatcherEvent(JoystickEvents::type_id, &data);
+        dispatcher_->dispatch(&e);
+    }
+
     button_states_[id] = true;
 }
 
 void JoystickEventHandler::button_released(int id)
 {
+    if (button_states_[id] == true)
+    {
+        auto event = JoystickEvents(id, JoystickEvents::ButtonReleased);
+        auto data = event.serialize();
+
+        auto e = DispatcherEvent(JoystickEvents::type_id, &data);
+        dispatcher_->dispatch(&e);
+    }
+
     button_states_[id] = false;
 }
 

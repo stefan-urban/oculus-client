@@ -13,7 +13,7 @@ void EdvsEventHandler::event(DispatcherEvent* event)
     {
         if (camera_id_.size() >= max_events_number_)
         {
-            std::cout << "max events size reached, allocate more memory" << std::endl;
+            //std::cout << "max events size reached, allocate more memory" << std::endl;
             continue;
         }
 
@@ -47,23 +47,23 @@ void EdvsEventHandler::update()
 {
     mutex_->lock();
 
-    clear();
+//    clear();
 
-//    for (size_t i = 0; i < camera_id_.size(); i++)
-//    {
-//        if (std::fabs(parity_[i]) < 0.9)
-//        {
-//            camera_id_.erase(camera_id_.begin() + i);
-//            position_.erase(position_.begin() + 2*i);
-//            position_.erase(position_.begin() + 2*i);
-//            parity_.erase(parity_.begin() + i);
-//            time_.erase(time_.begin() + i);
-//        }
-//        else
-//        {
-//            parity_[i] *= 0.5;
-//        }
-//    }
+    for (size_t i = 0; i < camera_id_.size(); i++)
+    {
+        if (std::fabs(parity_[i]) < 0.3)
+        {
+            camera_id_.erase(camera_id_.begin() + i);
+            position_.erase(position_.begin() + 2*i);
+            position_.erase(position_.begin() + 2*i);
+            parity_.erase(parity_.begin() + i);
+            time_.erase(time_.begin() + i);
+        }
+        else
+        {
+            parity_[i] *= 0.5;
+        }
+    }
 
     mutex_->unlock();
 }

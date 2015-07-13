@@ -3,18 +3,21 @@
 
 #include "Common.h"
 #include "vendor/joystick/joystick.hh"
+#include "vendor/dispatcher/Dispatcher.hpp"
 
 class JoystickEventHandler
 {
 public:
-    JoystickEventHandler()
+    JoystickEventHandler(Dispatcher *dispatcher)
+        : dispatcher_(dispatcher)
     {
         joystick_ = new Joystick;
         setup_state_vector_sizes();
     }
 
-    JoystickEventHandler(Joystick *joystick)
+    JoystickEventHandler(Joystick *joystick, Dispatcher *dispatcher)
         : joystick_(joystick)
+        , dispatcher_(dispatcher)
     {
         setup_state_vector_sizes();
     }
@@ -44,6 +47,7 @@ public:
 
 private:
     Joystick *joystick_;
+    Dispatcher *dispatcher_;
 
     char number_of_buttons_;
     char number_of_axis_;
