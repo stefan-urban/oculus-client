@@ -2,9 +2,12 @@
 
 #include <fstream>
 #include <iomanip>
+#include <chrono>
 
 EdvsEventLogger::EdvsEventLogger()
 {
+    std::chrono::steady_clock::time_point start_ = std::chrono::steady_clock::now();
+
     std::array<std::ofstream, 7> logfile;
 
     for (size_t i = 0; i < 7; i++)
@@ -52,10 +55,13 @@ void EdvsEventLogger::update()
         }
     }
 
+    auto duration = std::chrono::steady_clock::now() - start_;
+    unsigned long long time = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+
     // Write events
     for (size_t i = 0; i < it_; i++)
     {
-        logfile.at(events_[i].id) << std::setw(3) << std::to_string(events_[i].x) << " " << std::setw(3) << std::to_string(events_[i].y) << " " << std::to_string(events_[i].parity) << " " << std::to_string(0) << std::endl;
+        logfile.at(events_[i].id) << std::setw(3) << std::to_string(events_[i].x) << " " << std::setw(3) << std::to_string(events_[i].y) << " " << std::to_string(events_[i].parity) << " " << std::to_string(time) << std::endl;
     }
 
     // Close logfiles

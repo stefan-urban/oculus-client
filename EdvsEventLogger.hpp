@@ -4,6 +4,7 @@
 #include <array>
 #include <string>
 #include <iostream>
+#include <chrono>
 
 #include "vendor/dispatcher/Dispatcher.hpp"
 #include "vendor/oculus-server/Message_EventCollection2.hpp"
@@ -23,6 +24,8 @@ private:
 
     std::array<message_edvs_event_t, max_events> events_;
     size_t it_ = 0;
+
+    std::chrono::steady_clock::time_point start_;
 };
 
 #endif // EDVSEVENTLOGGER_HPP
