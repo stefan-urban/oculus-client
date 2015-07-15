@@ -1,10 +1,10 @@
-#include "EdvsEventLogger.hpp"
+#include "App_EdvsEventLogger.hpp"
 
 #include <fstream>
 #include <iomanip>
 #include <chrono>
 
-EdvsEventLogger::EdvsEventLogger()
+App_EdvsEventLogger::App_EdvsEventLogger()
 {
     std::chrono::steady_clock::time_point start_ = std::chrono::steady_clock::now();
 
@@ -22,7 +22,7 @@ EdvsEventLogger::EdvsEventLogger()
     }
 }
 
-void EdvsEventLogger::event(DispatcherEvent* event)
+void App_EdvsEventLogger::event(DispatcherEvent* event)
 {
     Message_EventCollection2 msg_events;
     msg_events.unserialize(event->data());
@@ -38,7 +38,7 @@ void EdvsEventLogger::event(DispatcherEvent* event)
     }
 }
 
-void EdvsEventLogger::update()
+void App_EdvsEventLogger::update()
 {
     std::array<std::ofstream, 7> logfile;
 
@@ -74,7 +74,7 @@ void EdvsEventLogger::update()
     it_ = 0;
 }
 
-std::string EdvsEventLogger::create_path(std::string file, int i)
+std::string App_EdvsEventLogger::create_path(std::string file, int i)
 {
     return file + "_" + std::to_string(i) + ".dvs";
 }

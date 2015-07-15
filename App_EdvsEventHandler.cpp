@@ -1,10 +1,13 @@
-#include "EdvsEventHandler.hpp"
+#include "App_EdvsEventHandler.hpp"
+
+#include "vendor/dispatcher/Dispatcher.hpp"
 #include "vendor/oculus-server/Message_EventCollection2.hpp"
+#include "Event_EdvsEventsUpdate.hpp"
 
 #include <cmath>
 #include <random>
 
-void EdvsEventHandler::event(DispatcherEvent* event)
+void App_EdvsEventHandler::event(DispatcherEvent* event)
 {
     Message_EventCollection2 msg_events;
     msg_events.unserialize(event->data());
@@ -35,7 +38,7 @@ void EdvsEventHandler::event(DispatcherEvent* event)
     }
 }
 
-void EdvsEventHandler::clear()
+void App_EdvsEventHandler::clear()
 {
     camera_id_.clear();
     position_.clear();
@@ -43,7 +46,7 @@ void EdvsEventHandler::clear()
     time_.clear();
 }
 
-void EdvsEventHandler::update()
+void App_EdvsEventHandler::update()
 {
     mutex_->lock();
 
@@ -66,4 +69,11 @@ void EdvsEventHandler::update()
     }
 
     mutex_->unlock();
+
+    // Dispatch edvs events update event
+    auto event = Event_EdvsEventsUpdate(parity_, position_, camera_id_, time_);
+    auto data = event.serialize();
+
+    auto e = DispatcherEvent(Event_EdvsEventsUpdate::type_id, &data);
+    dispatcher_->dispatch(&e);
 }

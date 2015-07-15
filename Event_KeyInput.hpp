@@ -1,14 +1,14 @@
-#ifndef INPUTEVENT_H
-#define INPUTEVENT_H
+#ifndef EVENT_KEYINPUT_HPP
+#define EVENT_KEYINPUT_HPP
 
 #include <vector>
 
-class InputEvent
+class Event_KeyInput
 {
 public:
     enum { type_id = 20 };
 
-    InputEvent(int key, int scancode, int action, int mods)
+    Event_KeyInput(int key, int scancode, int action, int mods)
         : key_(key)
         , scancode_(scancode)
         , action_(action)
@@ -16,7 +16,7 @@ public:
     {
     }
 
-    InputEvent()
+    Event_KeyInput()
     {
     }
 
@@ -30,4 +30,4 @@ private:
     int mods_;
 };
 
-#endif // INPUTEVENT_H
+#endif // EVENT_KEYINPUT_HPP

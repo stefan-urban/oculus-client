@@ -1,6 +1,6 @@
 
-#ifndef TCPSESSION_H
-#define TCPSESSION_H
+#ifndef APP_TCPSESSION_H
+#define APP_TCPSESSION_H
 
 #include <cstdlib>
 #include <deque>
@@ -12,12 +12,12 @@
 #include "vendor/oculus-server/Message.hpp"
 
 
-class TcpSession : public DispatcherListener
+class App_TcpSession : public DispatcherListener
 {
 public:
     enum { header_length = 4 };
 
-    TcpSession(boost::asio::io_service& io_service, boost::asio::ip::tcp::resolver::iterator endpoint_iterator, Dispatcher *dispatcher)
+    App_TcpSession(boost::asio::io_service& io_service, boost::asio::ip::tcp::resolver::iterator endpoint_iterator, Dispatcher *dispatcher)
       : io_service_(io_service)
       , socket_(io_service)
       , dispatcher_(dispatcher)
@@ -48,4 +48,4 @@ private:
 };
 
 
-#endif // TCPSESSION_H
+#endif // APP_TCPSESSION_H

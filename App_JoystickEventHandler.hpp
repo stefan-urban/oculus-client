@@ -1,21 +1,21 @@
-#ifndef JOYSTICKEVENTHANDLER_HPP
-#define JOYSTICKEVENTHANDLER_HPP
+#ifndef APP_JOYSTICKEVENTHANDLER_HPP
+#define APP_JOYSTICKEVENTHANDLER_HPP
 
 #include "Common.h"
 #include "vendor/joystick/joystick.hh"
 #include "vendor/dispatcher/Dispatcher.hpp"
 
-class JoystickEventHandler
+class App_JoystickEventHandler
 {
 public:
-    JoystickEventHandler(Dispatcher *dispatcher)
+    App_JoystickEventHandler(Dispatcher *dispatcher)
         : dispatcher_(dispatcher)
     {
         joystick_ = new Joystick;
         setup_state_vector_sizes();
     }
 
-    JoystickEventHandler(Joystick *joystick, Dispatcher *dispatcher)
+    App_JoystickEventHandler(Joystick *joystick, Dispatcher *dispatcher)
         : joystick_(joystick)
         , dispatcher_(dispatcher)
     {
@@ -61,4 +61,4 @@ private:
     void axis_update(int id, int new_value);
 };
 
-#endif // JOYSTICKEVENTHANDLER_HPP
+#endif // APP_JOYSTICKEVENTHANDLER_HPP

@@ -1,9 +1,9 @@
-#include "JoystickEventHandler.hpp"
-#include "vendor/dispatcher/Dispatcher.hpp"
+#include "App_JoystickEventHandler.hpp"
 
+#include "vendor/dispatcher/Dispatcher.hpp"
 #include "vendor/oculus-server/Message_JoystickEvent.hpp"
 
-int JoystickEventHandler::handle_events()
+int App_JoystickEventHandler::handle_events()
 {
     // Attempt to sample an event from the joystick
     std::vector<JoystickEvent> events;
@@ -31,7 +31,7 @@ int JoystickEventHandler::handle_events()
     return 1;
 }
 
-void JoystickEventHandler::button_pressed(int id)
+void App_JoystickEventHandler::button_pressed(int id)
 {
     if (button_states_[id] == true)
     {
@@ -45,7 +45,7 @@ void JoystickEventHandler::button_pressed(int id)
     button_states_[id] = true;
 }
 
-void JoystickEventHandler::button_released(int id)
+void App_JoystickEventHandler::button_released(int id)
 {
     if (button_states_[id] == true)
     {
@@ -59,12 +59,12 @@ void JoystickEventHandler::button_released(int id)
     button_states_[id] = false;
 }
 
-void JoystickEventHandler::axis_update(int id, int new_value)
+void App_JoystickEventHandler::axis_update(int id, int new_value)
 {
     axis_states_[id] = new_value;
 }
 
-void JoystickEventHandler::setup_state_vector_sizes()
+void App_JoystickEventHandler::setup_state_vector_sizes()
 {
     number_of_buttons_ = joystick_->numberOfButtons();
     button_states_.resize(number_of_buttons_);

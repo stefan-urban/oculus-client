@@ -1,20 +1,30 @@
+#include "App_TcpSession.hpp"
 
-#include "TcpSession.hpp"
-#include "vendor/dispatcher/Dispatcher.hpp"
 #include "vendor/oculus-server/Message_JoystickEvent.hpp"
+#include "vendor/oculus-server/Message_RobotCommand.hpp"
 
 #include <string>
 
 
-void TcpSession::event(DispatcherEvent* event)
+void App_TcpSession::event(DispatcherEvent* event)
 {
-    auto msg = Message_JoystickEvent();
-    msg.unserialize(event->data());
+    if (event->type() == Message_JoystickEvent::type_id)
+    {
+        auto msg = Message_JoystickEvent();
+        msg.unserialize(event->data());
 
-    deliver(&msg);
+        deliver(&msg);
+    }
+    else if (event->type() == Message_RobotCommand::type_id)
+    {
+        auto msg = Message_RobotCommand();
+        msg.unserialize(event->data());
+
+        deliver(&msg);
+    }
 }
 
-void TcpSession::deliver(Message *msg)
+void App_TcpSession::deliver(Message *msg)
 {
     // Insert type
     unsigned char type = msg->get_type();
@@ -45,12 +55,12 @@ void TcpSession::deliver(Message *msg)
         });
 }
 
-void TcpSession::close()
+void App_TcpSession::close()
 {
     io_service_.post([this]() { socket_.close(); });
 }
 
-void TcpSession::do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
+void App_TcpSession::do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 {
     boost::asio::async_connect(socket_, endpoint_iterator,
         [this](boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator)
@@ -62,7 +72,7 @@ void TcpSession::do_connect(boost::asio::ip::tcp::resolver::iterator endpoint_it
         });
 }
 
-void TcpSession::do_read_header()
+void App_TcpSession::do_read_header()
 {
 
     boost::asio::async_read(socket_, boost::asio::buffer(read_header_),
@@ -89,7 +99,7 @@ void TcpSession::do_read_header()
         });
 }
 
-void TcpSession::do_read_body()
+void App_TcpSession::do_read_body()
 {
     boost::asio::async_read(socket_, boost::asio::buffer(read_body_, read_body_.size()),
         [this](boost::system::error_code ec, std::size_t /*length*/)
@@ -116,7 +126,7 @@ void TcpSession::do_read_body()
         });
 }
 
-void TcpSession::do_write()
+void App_TcpSession::do_write()
 {
     boost::asio::async_write(socket_, boost::asio::buffer(write_buffer_.front()),
         [this](boost::system::error_code ec, std::size_t /*length*/)

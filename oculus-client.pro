@@ -41,23 +41,24 @@ SOURCES += \
     ovr/RiftRenderingApp.cpp \
     resources/ResourceEnums.cpp \
     resources/Resources.cpp \
-    PhotoSphereExample.cpp \
     Platform.cpp \
     Statics.cpp \
     Utils.cpp \
-    EdvsRiftApp.cpp \
     vendor/oculus-server/Message.cpp \
     Common.cpp \
-    JoystickEventHandler.cpp \
     vendor/joystick/joystick.cc \
     vendor/dispatcher/Dispatcher.cpp \
     vendor/oculus-server/Message_RobotCommand.cpp \
-    EdvsEventHandler.cpp \
-    EdvsEventLogger.cpp \
     vendor/oculus-server/Message_EventCollection2.cpp \
-    TcpSession.cpp \
-    InputEvent.cpp \
-    vendor/oculus-server/Message_JoystickEvent.cpp
+    vendor/oculus-server/Message_JoystickEvent.cpp \
+    App_OculusRift.cpp \
+    App_EdvsEventHandler.cpp \
+    Event_OculusRiftPosition.cpp \
+    Event_KeyInput.cpp \
+    App_JoystickEventHandler.cpp \
+    App_EdvsEventLogger.cpp \
+    Event_EdvsEventsUpdate.cpp \
+    App_TcpSession.cpp
 
 HEADERS += \
     vendor/edvstools/Edvs/edvs.h \
@@ -89,23 +90,24 @@ HEADERS += \
     resources/Resources_Export.h \
     Common.h \
     IO.h \
-    PhotoSphereExample.h \
     Platform.h \
     Types.h \
     Utils.h \
-    EdvsRiftApp.h \
     vendor/oculus-server/Message.hpp \
     opengl/Errors.hpp \
-    JoystickEventHandler.hpp \
     vendor/joystick/joystick.hh \
     vendor/dispatcher/Dispatcher.hpp \
     vendor/oculus-server/Message_RobotCommand.hpp \
-    EdvsEventHandler.hpp \
-    EdvsEventLogger.hpp \
     vendor/oculus-server/Message_EventCollection2.hpp \
-    TcpSession.hpp \
-    InputEvent.hpp \
-    vendor/oculus-server/Message_JoystickEvent.hpp
+    vendor/oculus-server/Message_JoystickEvent.hpp \
+    App_OculusRift.hpp \
+    App_EdvsEventHandler.hpp \
+    Event_OculusRiftPosition.hpp \
+    Event_KeyInput.hpp \
+    App_JoystickEventHandler.hpp \
+    App_EdvsEventLogger.hpp \
+    Event_EdvsEventsUpdate.hpp \
+    App_TcpSession.hpp
 
 DISTFILES += \
     resources/sphere_background.fs \

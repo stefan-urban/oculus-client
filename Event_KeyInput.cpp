@@ -1,10 +1,10 @@
-#include "InputEvent.hpp"
+#include "Event_KeyInput.hpp"
 
 #include <string>
 #include <sstream>
 #include <vector>
 
-std::vector<unsigned char> InputEvent::serialize()
+std::vector<unsigned char> Event_KeyInput::serialize()
 {
     std::string str;
 
@@ -23,7 +23,7 @@ std::vector<unsigned char> InputEvent::serialize()
     return std::vector<unsigned char>(str.begin(), str.end());
 }
 
-void InputEvent::unserialize(std::vector<unsigned char> *data)
+void Event_KeyInput::unserialize(std::vector<unsigned char> *data)
 {
     auto str = std::string(data->begin(), data->end());
 

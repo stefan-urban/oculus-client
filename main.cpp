@@ -6,21 +6,21 @@
 #include <boost/thread.hpp>
 
 #include "Common.h"
-#include "EdvsEventHandler.hpp"
-#include "EdvsEventLogger.hpp"
-#include "EdvsRiftApp.h"
-#include "TcpSession.hpp"
-#include "JoystickEventHandler.hpp"
 #include "vendor/edvstools/Edvs/EventStream.hpp"
 #include "vendor/joystick/joystick.hh"
 #include "vendor/dispatcher/Dispatcher.hpp"
-#include "InputEvent.hpp"
+
+#include "App_JoystickEventHandler.hpp"
+#include "App_EdvsEventHandler.hpp"
+#include "App_EdvsEventLogger.hpp"
+#include "App_OculusRift.hpp"
+#include "App_TcpSession.hpp"
+
+#include "Event_EdvsEventsUpdate.hpp"
 
 #include "vendor/oculus-server/Message_RobotCommand.hpp"
 #include "vendor/oculus-server/Message_JoystickEvent.hpp"
 #include "vendor/oculus-server/Message_EventCollection2.hpp"
-
-#include "PhotoSphereExample.h"
 
 
 // 10.162.177.202 4000
@@ -33,7 +33,7 @@ int global_stop = 0;
 boost::asio::io_service io_service;
 boost::mutex mutex;
 
-int edvs_images_app(EdvsEventHandler *edvs_event_handler)
+int edvs_images_app(App_EdvsEventHandler *edvs_event_handler)
 {
     while (global_stop == 0)
     {
@@ -45,7 +45,7 @@ int edvs_images_app(EdvsEventHandler *edvs_event_handler)
     return 0;
 }
 
-int edvs_logging_app(EdvsEventLogger *edvs_event_logger)
+int edvs_logging_app(App_EdvsEventLogger *edvs_event_logger)
 {
     while (global_stop == 0)
     {
@@ -57,10 +57,10 @@ int edvs_logging_app(EdvsEventLogger *edvs_event_logger)
     return 0;
 }
 
-int joystick_app(TcpSession *tcp_client, Dispatcher *dispatcher)
+int joystick_app(App_TcpSession *tcp_client, Dispatcher *dispatcher)
 {
     auto joystick = Joystick("/dev/input/js0");
-    auto event_handler = JoystickEventHandler(&joystick, dispatcher);
+    auto event_handler = App_JoystickEventHandler(&joystick, dispatcher);
 
     while (global_stop == 0)
     {
@@ -93,9 +93,18 @@ int joystick_app(TcpSession *tcp_client, Dispatcher *dispatcher)
         angular_speed = angular_speed > 70 ? 70 : angular_speed;
         angular_speed = angular_speed < -70 ? -70 : angular_speed;
 
+
+        auto event = Message_RobotCommand(x_speed, y_speed, angular_speed);
+        auto data = event.serialize();
+
+        auto e = DispatcherEvent(Message_RobotCommand::type_id, &data);
+        dispatcher->dispatch(&e);
+
+
+
         // Transmit changes
-        auto msg = Message_RobotCommand(x_speed, y_speed, angular_speed);
-        tcp_client->deliver(&msg);
+        //auto msg = Message_RobotCommand(x_speed, y_speed, angular_speed);
+        //tcp_client->deliver(&msg);
 
         Platform::sleepMillis(200);
     }
@@ -103,7 +112,7 @@ int joystick_app(TcpSession *tcp_client, Dispatcher *dispatcher)
     return 0;
 }
 
-int oculus_rift_app(EdvsEventHandler *edvs_event_handler, Dispatcher *dispatcher)
+int oculus_rift_app(Dispatcher *dispatcher)
 {
     if (!ovr_Initialize())
     {
@@ -116,8 +125,10 @@ int oculus_rift_app(EdvsEventHandler *edvs_event_handler, Dispatcher *dispatcher
 
     try
     {
-        EdvsRiftApp rift_app(edvs_event_handler, &mutex, dispatcher);
-        result = rift_app.run();
+        App_OculusRift app(&mutex, dispatcher);
+        dispatcher->addListener(&app, Event_EdvsEventsUpdate::type_id);
+
+        result = app.run();
     }
     catch (std::exception & error)
     {
@@ -146,13 +157,13 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    // Single eDVS camera images
-    auto edvs_event_handler = EdvsEventHandler(&mutex);
-    auto edvs_event_logger = EdvsEventLogger();
-
-
     // Setup dispatcher
     auto dispatcher = Dispatcher();
+
+    // Applications
+    auto edvs_event_handler = App_EdvsEventHandler(&mutex, &dispatcher);
+    auto edvs_event_logger = App_EdvsEventLogger();
+
 
     dispatcher.addListener(&edvs_event_handler, Message_EventCollection2::type_id);
     //dispatcher.addListener(&edvs_event_logger, Message_EventCollection2::type_id);
@@ -162,12 +173,12 @@ int main(int argc, char* argv[])
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
     //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
 
-    TcpSession tcp_client(io_service, endpoint_iterator, &dispatcher);
+    App_TcpSession tcp_client(io_service, endpoint_iterator, &dispatcher);
     dispatcher.addListener(&tcp_client, Message_JoystickEvent::type_id);
 
 
     boost::thread jsa(joystick_app, &tcp_client, &dispatcher);
-    boost::thread ora(oculus_rift_app, &edvs_event_handler, &dispatcher);
+    boost::thread ora(oculus_rift_app, &dispatcher);
     boost::thread eia(edvs_images_app, &edvs_event_handler);
     boost::thread ela(edvs_logging_app, &edvs_event_logger);
 

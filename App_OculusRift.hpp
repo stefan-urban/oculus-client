@@ -1,8 +1,7 @@
-#ifndef EDVSRIFTAPP_H
-#define EDVSRIFTAPP_H
+#ifndef APP_OCULUSRIFT_HPP
+#define APP_OCULUSRIFT_HPP
 
 #include "Common.h"
-#include "EdvsEventHandler.hpp"
 #include "vendor/dispatcher/Dispatcher.hpp"
 
 #include <chrono>
@@ -12,16 +11,6 @@
 #include <oglplus/opt/resources.hpp>
 
 
-struct MeshInputFile
-{
-    std::ifstream stream;
-
-    MeshInputFile(void)
-    {
-        oglplus::OpenResourceFile(stream, "resources", "spherical_calotte", ".obj");
-    }
-};
-
 typedef struct {
     glm::vec4 orientation;
     glm::vec3 position;
@@ -29,14 +18,13 @@ typedef struct {
 
 
 
-class EdvsRiftApp : public RiftApp
+class App_OculusRift : public RiftApp, public DispatcherListener
 {
 public:
     enum { type_id = 13 };
 
-    EdvsRiftApp(EdvsEventHandler *edvs_event_handler, boost::mutex *mutex, Dispatcher *dispatcher)
-        : edvs_event_handler_(edvs_event_handler)
-        , mutex_(mutex)
+    App_OculusRift(boost::mutex *mutex, Dispatcher *dispatcher)
+        : mutex_(mutex)
         , dispatcher_(dispatcher)
     {
     }
@@ -46,16 +34,14 @@ public:
     void renderScene();
     void onKey(int key, int scancode, int action, int mods);
 
+    void event(DispatcherEvent* event);
+
 private:
     float azimuth = 0.0;
     float elevation = -20.0 * DEGREES_TO_RADIANS;
 
     void drawEvents();
     void drawSphereBackground(int camera);
-
-    MeshInputFile mesh_input;
-
-    EdvsEventHandler *edvs_event_handler_;
 
     VertexArrayPtr vao;
     BufferPtr vbo_position;
@@ -72,4 +58,4 @@ private:
 };
 
 
-#endif // EDVSRIFTAPP_H
+#endif // APP_OCULUSRIFT_HPP

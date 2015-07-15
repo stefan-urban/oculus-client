@@ -1,5 +1,5 @@
-#ifndef EDVSEVENTLOGGER_HPP
-#define EDVSEVENTLOGGER_HPP
+#ifndef APP_EDVSEVENTLOGGER_HPP
+#define APP_EDVSEVENTLOGGER_HPP
 
 #include <array>
 #include <string>
@@ -9,10 +9,10 @@
 #include "vendor/dispatcher/Dispatcher.hpp"
 #include "vendor/oculus-server/Message_EventCollection2.hpp"
 
-class EdvsEventLogger : public DispatcherListener
+class App_EdvsEventLogger : public DispatcherListener
 {
 public:
-    EdvsEventLogger();
+    App_EdvsEventLogger();
     void event(DispatcherEvent* event);
     void update();
 
@@ -28,4 +28,4 @@ private:
     std::chrono::steady_clock::time_point start_;
 };
 
-#endif // EDVSEVENTLOGGER_HPP
+#endif // APP_EDVSEVENTLOGGER_HPP

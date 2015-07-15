@@ -1,6 +1,10 @@
+#include "App_OculusRift.hpp"
+
+#include "Event_KeyInput.hpp"
+#include "Event_OculusRiftPosition.hpp"
+#include "Event_EdvsEventsUpdate.hpp"
+
 #include "Common.h"
-#include "EdvsRiftApp.h"
-#include "InputEvent.hpp"
 
 #include <random>
 #include <cstring>
@@ -9,7 +13,18 @@
 using namespace oglplus;
 
 
-void EdvsRiftApp::initGl()
+void App_OculusRift::event(DispatcherEvent* event)
+{
+    auto events = Event_EdvsEventsUpdate();
+    events.unserialize(event->data());
+
+    parity_ = events.parity();
+    position_ = events.position();
+    camera_id_ = events.camera_id();
+    time_ = events.time();
+}
+
+void App_OculusRift::initGl()
 {
     RiftApp::initGl();
 
@@ -19,16 +34,9 @@ void EdvsRiftApp::initGl()
     vbo_camera_id = BufferPtr(new Buffer());
 }
 
-void EdvsRiftApp::update()
+void App_OculusRift::update()
 {
     RiftApp::update();
-
-    mutex_->lock();
-    parity_ = edvs_event_handler_->parity();
-    position_ = edvs_event_handler_->position();
-    camera_id_ = edvs_event_handler_->camera_id();
-    time_ = edvs_event_handler_->time();
-    mutex_->unlock();
 
     ovrTrackingState tracking_state = ovrHmd_GetTrackingState(hmd, 0.0);
 
@@ -45,21 +53,16 @@ void EdvsRiftApp::update()
         tracking_state.CameraPose.Position.z
         );
 
-    tracking_info_t info = {
-        orientation,
-        position
-    };
+    // Pack data
+    auto event = Event_OculusRiftPosition(orientation, position);
+    auto data = event.serialize();
 
-    std::vector<unsigned char> data;
-    data.resize(sizeof(tracking_info_t));
-
-    std::memcpy(&data[0], &info, sizeof(tracking_info_t));
-
-    auto e = DispatcherEvent(type_id, &data);
+    // And dispatch data
+    auto e = DispatcherEvent(Event_OculusRiftPosition::type_id, &data);
     dispatcher_->dispatch(&e);
 }
 
-void EdvsRiftApp::drawEvents()
+void App_OculusRift::drawEvents()
 {
     static ProgramPtr program = oria::loadProgram("./resources/event_pixel.vs", "./resources/event_pixel.fs");
 
@@ -132,41 +135,7 @@ void EdvsRiftApp::drawEvents()
     oglplus::NoVertexArray().Bind();
 }
 
-void EdvsRiftApp::drawSphereBackground(int camera_id)
-{
-    static ProgramPtr program = oria::loadProgram("./resources/sphere_background.vs", "./resources/sphere_background.fs");
-    static ShapeWrapperPtr geometry = ShapeWrapperPtr(new shapes::ShapeWrapper({ "Position" }, shapes::ObjMesh(mesh_input.stream), *program));
-
-    // Reset before application exit
-    Platform::addShutdownHook([]
-    {
-        program.reset();
-        geometry.reset();
-    });
-
-
-    MatrixStack & mv = Stacks::modelview();
-
-    mv.withPush([&]
-    {
-        // Binds the program
-        program->Use();
-
-        // Matrices as uniforms
-        Mat4Uniform(*program, "ModelView").Set(Stacks::modelview().top());
-        Mat4Uniform(*program, "Projection").Set(Stacks::projection().top());
-
-        // Draw this
-        geometry->Use();
-        geometry->Draw();
-    });
-
-    // Unbind
-    oglplus::NoProgram().Bind();
-    oglplus::NoVertexArray().Bind();
-}
-
-void EdvsRiftApp::renderScene()
+void App_OculusRift::renderScene()
 {
     using namespace oglplus;
 
@@ -197,7 +166,7 @@ void EdvsRiftApp::renderScene()
     Context::Enable(Capability::ProgramPointSize);
 }
 
-void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
+void App_OculusRift::onKey(int key, int scancode, int action, int mods)
 {
     if (GLFW_PRESS == action)
     {
@@ -223,10 +192,10 @@ void EdvsRiftApp::onKey(int key, int scancode, int action, int mods)
     RiftApp::onKey(key, scancode, action, mods);
 
     // Dispatch all over events
-    auto input_event = InputEvent(key, scancode, action, mods);
+    auto input_event = Event_KeyInput(key, scancode, action, mods);
     auto data = input_event.serialize();
 
     // Pack new event and dispatch it
-    auto e = DispatcherEvent(InputEvent::type_id, &data);
+    auto e = DispatcherEvent(Event_KeyInput::type_id, &data);
     dispatcher_->dispatch(&e);
 }

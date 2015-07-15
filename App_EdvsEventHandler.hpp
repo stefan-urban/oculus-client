@@ -1,5 +1,5 @@
-#ifndef EDVSEVENTHANDLER_H
-#define EDVSEVENTHANDLER_H
+#ifndef APP_EDVSEVENTHANDLER_H
+#define APP_EDVSEVENTHANDLER_H
 
 #include <vector>
 #include <boost/thread.hpp>
@@ -8,13 +8,14 @@
 #include "vendor/dispatcher/Dispatcher.hpp"
 
 
-class EdvsEventHandler : public DispatcherListener
+class App_EdvsEventHandler : public DispatcherListener
 {
 public:
     enum { max_event_time = 50 * 1000 };
 
-    EdvsEventHandler(boost::mutex *mutex)
+    App_EdvsEventHandler(boost::mutex *mutex, Dispatcher *dispatcher)
         : mutex_(mutex)
+        , dispatcher_(dispatcher)
     {
         parity_.reserve(max_events_number_);
         position_.reserve(max_events_number_ * 2);
@@ -54,8 +55,10 @@ private:
     std::vector<unsigned long long> time_;
 
     boost::mutex *mutex_;
+    Dispatcher *dispatcher_;
+
 
     const int max_events_number_ = 50000;
 };
 
-#endif // EDVSEVENTHANDLER_H
+#endif // APP_EDVSEVENTHANDLER_H
