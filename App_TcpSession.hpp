@@ -1,4 +1,3 @@
-
 #ifndef APP_TCPSESSION_H
 #define APP_TCPSESSION_H
 
@@ -22,8 +21,9 @@ public:
       , socket_(io_service)
       , dispatcher_(dispatcher)
     {
-        do_connect(endpoint_iterator);
         read_header_.resize(header_length);
+
+        do_connect(endpoint_iterator);
     }
 
   void deliver(Message *msg);

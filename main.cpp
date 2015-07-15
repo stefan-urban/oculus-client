@@ -51,13 +51,13 @@ int edvs_logging_app(App_EdvsEventLogger *edvs_event_logger)
     {
         edvs_event_logger->update();
 
-        Platform::sleepMillis(1000);
+        Platform::sleepMillis(50);
     }
 
     return 0;
 }
 
-int joystick_app(App_TcpSession *tcp_client, Dispatcher *dispatcher)
+int joystick_app(Dispatcher *dispatcher)
 {
     auto joystick = Joystick("/dev/input/js0");
     auto event_handler = App_JoystickEventHandler(&joystick, dispatcher);
@@ -99,12 +99,6 @@ int joystick_app(App_TcpSession *tcp_client, Dispatcher *dispatcher)
 
         auto e = DispatcherEvent(Message_RobotCommand::type_id, &data);
         dispatcher->dispatch(&e);
-
-
-
-        // Transmit changes
-        //auto msg = Message_RobotCommand(x_speed, y_speed, angular_speed);
-        //tcp_client->deliver(&msg);
 
         Platform::sleepMillis(200);
     }
@@ -157,33 +151,36 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+
     // Setup dispatcher
     auto dispatcher = Dispatcher();
 
-    // Applications
-    auto edvs_event_handler = App_EdvsEventHandler(&mutex, &dispatcher);
-    auto edvs_event_logger = App_EdvsEventLogger();
 
-
+    // APP: Event handling with visual pre processing (decay)
+    auto edvs_event_handler = App_EdvsEventHandler(&dispatcher);
     dispatcher.addListener(&edvs_event_handler, Message_EventCollection2::type_id);
-    //dispatcher.addListener(&edvs_event_logger, Message_EventCollection2::type_id);
 
-    // TCP client connection
+    // APP: Event logging
+    auto edvs_event_logger = App_EdvsEventLogger();
+    dispatcher.addListener(&edvs_event_logger, Message_EventCollection2::type_id);
+
+    // APP: TCP connection
     boost::asio::ip::tcp::resolver resolver(io_service);
     auto endpoint_iterator = resolver.resolve({ argv[1], argv[2] });
-    //auto endpoint_iterator = resolver.resolve({ "192.168.0.133", "4000" });
 
     App_TcpSession tcp_client(io_service, endpoint_iterator, &dispatcher);
     dispatcher.addListener(&tcp_client, Message_JoystickEvent::type_id);
+    dispatcher.addListener(&tcp_client, Message_RobotCommand::type_id);
 
 
-    boost::thread jsa(joystick_app, &tcp_client, &dispatcher);
+    // Start threads
+    boost::thread jsa(joystick_app, &dispatcher);
     boost::thread ora(oculus_rift_app, &dispatcher);
     boost::thread eia(edvs_images_app, &edvs_event_handler);
     boost::thread ela(edvs_logging_app, &edvs_event_logger);
 
 
-    // Start client
+    // Start TCP client
     io_service.run();
 
     tcp_client.close();
