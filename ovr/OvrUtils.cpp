@@ -23,6 +23,8 @@ limitations under the License.
 #define BRAD_DEBUG 1
 #endif
 
+extern bool use_windows_mode;
+
 namespace ovr
 {
     /**
@@ -41,8 +43,15 @@ namespace ovr
 
         // If we're creating a desktop window, we strip off any window decorations
         // which might change the location of the rendered contents relative to the lenses.
-        glfwWindowHint(GLFW_DECORATED, 0);
-        return glfw::createFullscreenWindow(outSize, monitor);
+        if (use_windows_mode)
+        {
+            return glfw::createWindow(1400, 900);
+        }
+        else
+        {
+            glfwWindowHint(GLFW_DECORATED, 0);
+            return glfw::createFullscreenWindow(outSize, monitor);
+        }
     }
 
     /**

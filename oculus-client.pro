@@ -8,7 +8,6 @@ QMAKE_CFLAGS += -std=gnu11
 LIBS += -pthread
 LIBS += -lboost_system -lboost_thread
 LIBS += -lOVR -ldl -lglfw -lGL -lGLEW -lGLU
-LIBS += -lopencv_core -lopencv_highgui -lopencv_imgproc
 LIBS += -lOpenCTM -L/usr/local/lib/
 
 

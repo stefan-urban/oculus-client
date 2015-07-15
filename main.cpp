@@ -26,6 +26,8 @@
 // 10.162.177.202 4000
 // 10.162.242.209 4000
 
+bool use_windows_mode = false;
+
 
 // Global stop bit
 int global_stop = 0;
