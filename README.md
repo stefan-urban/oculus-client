@@ -8,15 +8,15 @@ Does not work with Intel graphic adapters!
 
 Install the following packages from the repository:
 - git
-- libboost-system1.55-dev
-- libboost-thread1.55-dev
+- libboost-system-dev
+- libboost-thread-dev
 - libglew-dev
 - libopencv-dev
 - qt5-qmake
 - libglm-dev
 
 All in one command:<br>
-- `sudo apt install git libboost-system1.55-dev libboost-thread1.55-dev libopencv-dev libglew-dev  qt5-qmake libglm-dev`
+- `sudo apt install git libboost-system-dev libboost-thread-dev libopencv-dev libglew-dev  qt5-qmake libglm-dev`
 
 Install the following packages by following the individual installation instructions:
 - [OpenCTM](https://github.com/stefan-urban/OpenCTM.git)
@@ -34,7 +34,7 @@ Install the following packages by following the individual installation instruct
 # Starting
 
 1. Start the Oculus Rift Service with `ovrd`<br>(It is possible to start this command as daemon.)
-2. Run application with `./oculus-client`
+2. Run application with `./oculus-client <server-ip> <port>`
 
 <hr>
 
