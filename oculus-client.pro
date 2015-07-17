@@ -47,7 +47,6 @@ SOURCES += \
     Utils.cpp \
     EdvsRiftApp.cpp \
     vendor/oculus-server/Message.cpp \
-    Common.cpp \
     JoystickEventHandler.cpp \
     vendor/joystick/joystick.cc \
     vendor/dispatcher/Dispatcher.cpp \
@@ -112,3 +111,8 @@ DISTFILES += \
     resources/sphere_background.vs \
     resources/event_pixel.fs \
     resources/event_pixel.vs
+
+OTHER_FILES += \
+    README.md \
+    LICENSE.Apache \
+    LICENSE

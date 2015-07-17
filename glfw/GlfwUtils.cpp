@@ -1,3 +1,8 @@
+/**
+ * Modified by :   Stefan Urban <stefan.urban@live.de>
+                   - removed everything than linux code
+ */
+
 #include "Common.h"
 
 // For some interaction with the Oculus SDK we'll need the native window

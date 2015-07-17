@@ -1,0 +1,63 @@
+The following files are licensed under Apache Licence, Version 2.0:
+
+glfw/GlfwApp.cpp
+glfw/GlfwApp.h
+glfw/GlfwUtils.cpp
+glfw/GlfwUtils.h
+
+opengl/Constants.h
+opengl/Font.cpp
+opengl/Font.h
+opengl/Framebuffer.h
+opengl/GlUtils.cpp
+opengl/GlUtils.h
+opengl/Shaders.cpp
+opengl/Shaders.h
+opengl/Textures.cpp
+opengl/Textures.h
+
+ovr/OvrUtils.cpp
+ovr/OvrUtils.h
+ovr/RiftApp.cpp
+ovr/RiftApp.h
+ovr/RiftGlfwApp.cpp
+ovr/RiftGlfwApp.h
+ovr/RiftManagerApp.cpp
+ovr/RiftManagerApp.h
+ovr/RiftRenderingApp.cpp
+ovr/RiftRenderingApp.h
+
+rendering/Colors.h
+rendering/Lights.h
+rendering/MatrixStack.h
+rendering/State.h
+rendering/Vectors.h
+
+resources/ResourceEnums.cpp
+resources/ResourceEnums.h
+resources/Resources.cpp
+resources/Resources.h
+resources/Resources_Export.h
+
+Common.h
+IO.h
+Platform.cpp
+Plattform.h
+Statics.cpp
+Types.h
+Utils.cpp
+Utils.h
+
+------------------------------------------------------------------------
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
