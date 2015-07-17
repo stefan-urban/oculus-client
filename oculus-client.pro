@@ -45,7 +45,6 @@ SOURCES += \
     Statics.cpp \
     Utils.cpp \
     vendor/oculus-server/Message.cpp \
-    Common.cpp \
     vendor/joystick/joystick.cc \
     vendor/dispatcher/Dispatcher.cpp \
     vendor/oculus-server/Message_RobotCommand.cpp \
@@ -114,3 +113,8 @@ DISTFILES += \
     resources/sphere_background.vs \
     resources/event_pixel.fs \
     resources/event_pixel.vs
+
+OTHER_FILES += \
+    README.md \
+    LICENSE.Apache \
+    LICENSE

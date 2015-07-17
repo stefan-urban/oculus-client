@@ -2,6 +2,8 @@
 
  Authors     :   Bradley Austin Davis <bdavis@saintandreas.org>
  Copyright   :   Copyright Brad Davis. All Rights reserved.
+ Modified by :   Stefan Urban <stefan.urban@live.de>
+                  - removed everything than linux code
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
